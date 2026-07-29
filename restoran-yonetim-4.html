@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#232420">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ocakbaşı Kasa">
+<title>Ocakbaşı Kasa — Restoran Yönetim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#232420;
+    --board-2:#2c2d27;
+    --board-3:#34362e;
+    --chalk:#efe9da;
+    --dim:#a39d86;
+    --paper:#faf6ec;
+    --paper-2:#f1ead8;
+    --mustard:#c99a2e;
+    --rust:#a8402e;
+    --sage:#6b7a5e;
+    --sage-2:#8fa87a;
+    --line:#454639;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--board);
+    color:var(--chalk);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  button{font-family:inherit;}
+
+  /* ===== TOP BAR ===== */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 26px;
+    background:var(--board-2);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:20;
+  }
+  .brand{ display:flex; align-items:baseline; gap:12px; }
+  .brand h1{
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:22px; margin:0;
+    letter-spacing:0.5px;
+  }
+  .brand .tag{
+    font-family:'Courier Prime', monospace; font-size:11px; color:var(--mustard);
+    letter-spacing:2px; text-transform:uppercase;
+  }
+  .tabs{ display:flex; gap:6px; }
+  .tab-btn{
+    background:none; border:1px solid var(--line); color:var(--dim);
+    padding:9px 18px; border-radius:6px; cursor:pointer;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px;
+    letter-spacing:0.5px; position:relative;
+    transition:all .12s ease;
+  }
+  .tab-btn:hover{ color:var(--chalk); border-color:var(--mustard); }
+  .tab-btn.active{ background:var(--mustard); color:#232420; border-color:var(--mustard); }
+  .tab-badge{
+    position:absolute; top:-7px; right:-7px;
+    background:var(--rust); color:#fff; font-size:10px; font-weight:700;
+    border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;
+    font-family:'Inter', sans-serif;
+  }
+  .clock{ font-family:'Courier Prime', monospace; font-size:13px; color:var(--dim); }
+
+  /* ===== GİRİŞ EKRANI ===== */
+  #login-screen{
+    position:fixed; inset:0; z-index:100; background:var(--board);
+    display:flex; align-items:center; justify-content:center;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.04), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.03), transparent 40%);
+  }
+  body.logged-in #login-screen{ display:none; }
+  body:not(.logged-in) #app-shell{ display:none; }
+  .login-card{
+    background:var(--board-2); border:1px solid var(--line); border-radius:12px;
+    padding:36px 32px; width:100%; max-width:340px; box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    text-align:center;
+  }
+  .login-sub{ font-size:13px; color:var(--dim); margin:6px 0 22px; }
+  .login-form{ display:flex; flex-direction:column; gap:10px; }
+  .login-form input{
+    font-family:'Inter', sans-serif; font-size:14px; padding:11px 12px;
+    border:1px solid var(--line); border-radius:6px; background:#1a1b17; color:var(--chalk);
+  }
+  .login-form button{
+    background:var(--mustard); color:#232420; border:none; padding:11px; border-radius:6px;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; cursor:pointer; margin-top:4px;
+  }
+  .login-form button:hover{ filter:brightness(1.08); }
+  .login-hint{ font-size:11px; color:var(--dim); margin-top:16px; line-height:1.6; }
+
+  .user-box{ display:flex; align-items:center; gap:12px; }
+  .current-user{
+    font-family:'Oswald', sans-serif; font-size:12.5px; font-weight:600; color:var(--mustard);
+  }
+  .logout-btn{
+    background:none; border:1px solid var(--line); color:var(--dim); padding:6px 12px;
+    border-radius:5px; cursor:pointer; font-size:11.5px; font-family:'Inter', sans-serif;
+  }
+  .logout-btn:hover{ border-color:var(--rust); color:var(--rust); }
+
+  /* ===== TOAST ===== */
+  #toast-wrap{
+    position:fixed; top:70px; right:24px; z-index:50;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .toast{
+    background:var(--sage); color:#fff; padding:12px 18px; border-radius:6px;
+    font-size:13.5px; box-shadow:0 10px 26px rgba(0,0,0,0.35);
+    max-width:320px; animation:slidein .25s ease;
+  }
+  .toast.msg{ background:var(--mustard); color:#232420; font-weight:600; }
+  @keyframes slidein{ from{opacity:0; transform:translateX(20px);} to{opacity:1; transform:translateX(0);} }
+
+  .view{ padding:26px; max-width:1400px; margin:0 auto; }
+  .view h2.section-title{
+    font-family:'Oswald', sans-serif; font-size:15px; letter-spacing:2.5px;
+    text-transform:uppercase; color:var(--mustard); margin:0 0 18px;
+  }
+
+  /* ===== MASALAR GRID ===== */
+  .table-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px;
+  }
+  .table-card{
+    background:var(--board-2); border:2px solid var(--line); border-radius:10px;
+    padding:16px 14px; cursor:pointer; text-align:left; color:var(--chalk);
+    transition:all .12s ease; position:relative;
+  }
+  .table-card:hover{ transform:translateY(-2px); border-color:var(--mustard); }
+  .table-card .tno{ font-family:'Oswald', sans-serif; font-size:22px; font-weight:700; }
+  .table-card .tstatus{
+    font-family:'Courier Prime', monospace; font-size:11px; letter-spacing:1px;
+    text-transform:uppercase; margin-top:8px; padding:3px 8px; border-radius:20px; display:inline-block;
+  }
+  .table-card .ttotal{ font-family:'Courier Prime', monospace; font-size:12px; color:var(--dim); margin-top:8px; }
+  .table-card .tmsg{
+    margin-top:8px; font-size:11px; color:var(--mustard); font-style:italic;
+    border-top:1px dashed var(--line); padding-top:6px;
+  }
+  .s-empty{ background:#3a3b32; color:#9a9682; }
+  .s-ordering{ background:#4a4326; color:var(--mustard); }
+  .s-kitchen{ background:#5a3d24; color:#f0a95c; }
+  .s-ready{ background:#3d4d34; color:var(--sage-2); animation:pulse 1.4s infinite; }
+  .s-payment{ background:#4a2b25; color:#e08672; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .table-card.card-ready{ border-color:var(--sage-2); }
+  .table-card.card-kitchen{ border-color:#c17a35; }
+  .table-card.card-payment{ border-color:var(--rust); }
+
+  /* ===== ORDER PANEL (masa detay) ===== */
+  .order-layout{ display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
+  @media (max-width:900px){ .order-layout{ grid-template-columns:1fr; } }
+  .back-btn{
+    background:none; border:1px solid var(--line); color:var(--dim); padding:7px 14px;
+    border-radius:6px; cursor:pointer; font-size:12.5px; margin-bottom:16px;
+  }
+  .back-btn:hover{ border-color:var(--mustard); color:var(--chalk); }
+
+  .menu-block .category h3{
+    font-family:'Oswald', sans-serif; font-size:13px; letter-spacing:2.5px; text-transform:uppercase;
+    color:var(--mustard); border-bottom:1px dashed #5a5c4c; padding-bottom:7px; margin:20px 0 10px;
+  }
+  .menu-block .category:first-child h3{ margin-top:0; }
+  .items-grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  @media (max-width:480px){ .items-grid{ grid-template-columns:1fr; } }
+  .item-btn{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    background:var(--board-2); border:1px solid var(--line); border-radius:6px;
+    padding:11px 13px; cursor:pointer; color:var(--chalk); text-align:left;
+    transition:all .12s ease;
+  }
+  .item-btn:hover{ border-color:var(--mustard); background:var(--board-3); transform:translateY(-1px); }
+  .item-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  .item-thumb{
+    width:30px; height:30px; border-radius:6px; flex-shrink:0; display:flex; align-items:center;
+    justify-content:center; font-size:15px; background:var(--board); background-size:cover;
+    background-position:center; border:1px solid rgba(255,255,255,0.08);
+  }
+  .item-name{ font-size:14px; flex:1; }
+  .item-price{ font-family:'Courier Prime', monospace; font-size:12.5px; color:var(--mustard); font-weight:700; white-space:nowrap; }
+
+  /* ticket */
+  .ticket{
+    background:var(--paper); color:var(--board); border-radius:6px; overflow:hidden;
+    display:flex; flex-direction:column; box-shadow:0 16px 34px rgba(0,0,0,0.4);
+    font-family:'Courier Prime', monospace;
+  }
+  .ticket-head{ text-align:center; padding:18px 18px 12px; border-bottom:1px dashed #b9b092; }
+  .ticket-head .tname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:18px; }
+  .status-pill{
+    display:inline-block; margin-top:8px; padding:3px 10px; border-radius:20px;
+    font-size:10px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700;
+  }
+  .ticket-body{ padding:12px 18px; max-height:320px; overflow-y:auto; }
+  .empty-note{ text-align:center; color:#9a927a; font-size:12.5px; padding:24px 8px; line-height:1.6; }
+  .line{ display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:7px 0; border-bottom:1px dotted #ddd4bc; align-items:center; }
+  .l-name{ flex:1; }
+  .l-qty{ display:flex; align-items:center; gap:5px; color:#6b6752; }
+  .qty-btn{
+    background:none; border:1px solid #b9b092; color:var(--board); width:19px; height:19px;
+    border-radius:4px; font-size:11px; cursor:pointer; font-family:'Courier Prime', monospace;
+  }
+  .qty-btn:hover{ background:#eee6cf; }
+  .l-remove{ background:none; border:none; color:var(--rust); cursor:pointer; font-size:13px; }
+
+  .note-field{ padding:0 18px 12px; }
+  .note-field textarea{
+    width:100%; font-family:'Inter', sans-serif; font-size:12.5px; padding:8px 10px;
+    border:1px solid #d9cfae; border-radius:5px; resize:none; background:#fffdf6; color:var(--board);
+  }
+  .note-field label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
+
+  .whatsapp-block{ padding:0 18px 12px; }
+  .whatsapp-block label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
+  .wa-row{ display:flex; gap:7px; }
+  .wa-row input{
+    flex:1; font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px;
+    border:1px solid #d9cfae; border-radius:5px; background:#fffdf6; color:var(--board);
+  }
+  .wa-btn{
+    background:#25D366; color:#0b3d22; border:none; padding:9px 13px; border-radius:5px;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; cursor:pointer; white-space:nowrap;
+  }
+  .wa-btn:hover{ filter:brightness(1.06); }
+
+  .ticket-totals{ padding:12px 18px 6px; border-top:1px dashed #b9b092; font-size:13px; }
+  .trow{ display:flex; justify-content:space-between; padding:3px 0; color:#5c5744; }
+  .trow.grand{ font-size:17px; font-weight:700; color:var(--board); padding-top:7px; border-top:1px solid #c9c0a4; margin-top:3px; }
+
+  .ticket-actions{ padding:12px 18px 20px; display:flex; flex-direction:column; gap:8px; }
+  .btn{
+    font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.5px; font-size:13.5px;
+    padding:11px 10px; border:none; border-radius:5px; cursor:pointer; transition:filter .12s ease, transform .12s ease;
+  }
+  .btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn:not(:disabled):hover{ filter:brightness(1.08); transform:translateY(-1px); }
+  .btn-accept{ background:var(--sage); color:#fff; }
+  .btn-send{ background:var(--mustard); color:#232420; }
+  .btn-pay{ background:var(--rust); color:#fff; }
+
+  .transfer-block{ padding:0 18px 20px; }
+  .btn-transfer{
+    width:100%; background:none; border:1px solid #b9b092; color:#6b6752;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:12.5px; padding:9px 10px;
+    border-radius:5px; cursor:pointer;
+  }
+  .btn-transfer:hover{ border-color:var(--rust); color:var(--rust); }
+  .transfer-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .transfer-opt{
+    background:#eee6cf; border:1px solid #d9cfae; color:var(--board); font-family:'Courier Prime', monospace;
+    font-size:12px; padding:6px 10px; border-radius:5px; cursor:pointer;
+  }
+  .transfer-opt:hover{ background:#e4d8b3; }
+
+  .delete-block{ padding:0 18px 20px; }
+  .btn-delete{
+    width:100%; background:none; border:1px solid var(--rust); color:var(--rust);
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:12.5px; padding:9px 10px;
+    border-radius:5px; cursor:pointer;
+  }
+  .btn-delete:hover{ background:var(--rust); color:#fff; }
+  .delete-confirm{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .delete-confirm input{
+    flex:1; min-width:120px; font-family:'Inter', sans-serif; font-size:13px; padding:8px 10px;
+    border:1px solid #d9cfae; border-radius:5px; background:#fffdf6; color:var(--board);
+  }
+  .delete-confirm select{
+    font-family:'Inter', sans-serif; font-size:13px; padding:8px 10px;
+    border:1px solid #d9cfae; border-radius:5px; background:#fffdf6; color:var(--board);
+  }
+  .delete-confirm button{
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; padding:8px 12px;
+    border:none; border-radius:5px; cursor:pointer;
+  }
+  .delete-confirm #btn-delete-confirm{ background:var(--rust); color:#fff; }
+  .delete-confirm #btn-delete-cancel{ background:#e5ded0; color:var(--board); }
+
+  /* ===== KDS (Mutfak Ekranı) ===== */
+  .kds-wrap{ background:#111310; border-radius:10px; padding:20px; min-height:420px; }
+  .kds-empty{ color:#5f6357; text-align:center; padding:60px 20px; font-family:'Courier Prime', monospace; }
+  .kds-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
+  .kds-card{
+    background:#1b1d17; border:1px solid #33362a; border-radius:8px; padding:16px;
+    font-family:'Courier Prime', monospace; color:#e7e2ce;
+  }
+  .kds-card.bekliyor{ border-left:4px solid var(--mustard); }
+  .kds-card.hazirlaniyor{ border-left:4px solid #c17a35; }
+  .kds-card.hazir{ border-left:4px solid var(--sage-2); }
+  .kds-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .kds-table{ font-family:'Oswald', sans-serif; font-size:17px; font-weight:700; color:#fff; }
+  .kds-timer{ font-size:12px; color:#f0a95c; }
+  .kds-items{ font-size:13px; line-height:1.7; margin-bottom:8px; }
+  .kds-note{ background:#2a2c22; border-radius:5px; padding:7px 9px; font-size:11.5px; color:var(--mustard); margin-bottom:10px; }
+  .kds-status-label{ font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; display:inline-block; }
+  .kds-actions{ display:flex; gap:6px; margin-bottom:8px; }
+  .kds-btn{
+    flex:1; font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; padding:8px;
+    border:none; border-radius:5px; cursor:pointer; color:#fff;
+  }
+  .kds-btn.prep{ background:#c17a35; }
+  .kds-btn.ready{ background:var(--sage-2); color:#1b1d17; }
+  .kds-btn:disabled{ opacity:0.3; cursor:not-allowed; }
+  .kds-msg-row{ display:flex; gap:5px; flex-wrap:wrap; }
+  .quick-msg{
+    background:#2a2c22; border:1px solid #454736; color:#c9c4ac; font-size:10.5px;
+    padding:5px 8px; border-radius:12px; cursor:pointer;
+  }
+  .quick-msg:hover{ border-color:var(--mustard); color:var(--mustard); }
+
+  /* ===== KASA ===== */
+  .kasa-table-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+  .kasa-row{
+    display:flex; justify-content:space-between; align-items:center; background:var(--board-2);
+    border:1px solid var(--line); border-radius:6px; padding:12px 16px; cursor:pointer;
+  }
+  .kasa-row:hover{ border-color:var(--mustard); }
+  .kasa-row.selected{ border-color:var(--mustard); background:var(--board-3); }
+  .kasa-none{ color:var(--dim); font-size:13px; padding:20px; text-align:center; }
+
+  .quick-cash{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; padding:0 18px; }
+  .quick-cash button{
+    font-family:'Courier Prime', monospace; font-size:11.5px; padding:6px 10px; background:#eee6cf;
+    border:1px solid #d9cfae; border-radius:5px; cursor:pointer; color:var(--board);
+  }
+  .quick-cash button:hover{ background:#e4d8b3; }
+  .pay-row{ padding:0 18px 10px; }
+  .pay-row input{
+    width:100%; font-family:'Courier Prime', monospace; font-size:15px; padding:9px 10px;
+    border:1px solid #b9b092; border-radius:5px; background:#fffdf6; color:var(--board);
+  }
+  .change-line{ display:flex; justify-content:space-between; font-size:14px; font-weight:700; padding:8px 18px 2px; }
+  .change-line.ok{ color:#2b6b5e; }
+  .change-line.short{ color:var(--rust); }
+
+  /* ===== GÜN SONU ===== */
+  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:26px; }
+  .summary-card{
+    background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:20px 22px;
+  }
+  .summary-card .s-label{
+    font-family:'Oswald', sans-serif; font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--dim); margin-bottom:8px;
+  }
+  .summary-card .s-value{ font-family:'Courier Prime', monospace; font-size:30px; font-weight:700; color:var(--mustard); }
+  .summary-card.revenue .s-value{ color:var(--sage-2); }
+
+  .breakdown-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .breakdown-table th{
+    text-align:left; font-family:'Oswald', sans-serif; font-size:11.5px; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--mustard); border-bottom:1px solid var(--line); padding:8px 10px;
+  }
+  .breakdown-table td{ padding:9px 10px; border-bottom:1px solid var(--line); font-family:'Courier Prime', monospace; }
+  .breakdown-table tr:hover td{ background:var(--board-2); }
+  .reset-day-btn{
+    background:none; border:1px solid var(--rust); color:var(--rust); padding:9px 16px;
+    border-radius:6px; cursor:pointer; font-size:12.5px; margin-top:20px;
+  }
+  .reset-day-btn:hover{ background:var(--rust); color:#fff; }
+  .gunsonu-empty{ color:var(--dim); text-align:center; padding:40px 20px; }
+
+  /* Giderler */
+  .expense-block{
+    background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:22px 0;
+  }
+  .expense-block h3{
+    font-family:'Oswald', sans-serif; font-size:13px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--mustard); margin:0 0 12px;
+  }
+  .expense-row{
+    display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid var(--line);
+    font-family:'Courier Prime', monospace; color:var(--chalk);
+  }
+  .expense-row .e-remove{ background:none; border:none; color:var(--rust); cursor:pointer; font-size:13px; margin-left:8px; }
+  .expense-empty{ color:var(--dim); font-size:12.5px; padding:6px 0; }
+  .expense-form{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .expense-form input{
+    font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px; border:1px solid var(--line);
+    border-radius:5px; background:var(--board); color:var(--chalk);
+  }
+  .expense-form input[name="desc"]{ flex:2; min-width:160px; }
+  .expense-form input[name="amount"]{ flex:1; min-width:100px; }
+  .expense-form button{
+    background:var(--rust); color:#fff; border:none; padding:9px 16px; border-radius:5px;
+    cursor:pointer; font-family:'Oswald', sans-serif; font-weight:600; font-size:13px;
+  }
+  .expense-form button:hover{ filter:brightness(1.1); }
+
+  /* Yapay Zeka Analizi */
+  .ai-block{
+    background:linear-gradient(150deg, #23281f, #1c2e2a);
+    border:1px solid #3a5c4d; border-radius:10px; padding:20px 22px; margin:22px 0;
+  }
+  .ai-header{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+    font-family:'Oswald', sans-serif; font-size:15px; font-weight:600; letter-spacing:0.5px; color:var(--sage-2);
+  }
+  .ai-badge{
+    background:var(--sage-2); color:#152018; font-size:11px; font-weight:700; padding:3px 8px;
+    border-radius:5px; letter-spacing:1px;
+  }
+  .ai-btn{
+    background:var(--sage-2); color:#152018; border:none; padding:10px 18px; border-radius:6px;
+    cursor:pointer; font-family:'Oswald', sans-serif; font-weight:600; font-size:13px; letter-spacing:0.5px;
+  }
+  .ai-btn:hover{ filter:brightness(1.08); }
+  .ai-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .ai-result{
+    margin-top:16px; font-size:13.5px; line-height:1.75; color:#dfe9e0; white-space:pre-wrap;
+  }
+  .ai-loading{ color:var(--dim); font-size:13px; font-style:italic; }
+  .ai-error{ color:#e08672; font-size:13px; }
+
+  ::-webkit-scrollbar{ width:7px; }
+  ::-webkit-scrollbar-thumb{ background:#c9c0a4; border-radius:4px; }
+
+  .ticket-kasa{ max-width:420px; }
+
+  /* ===== MOBİL TELEFON UYUMU ===== */
+  @media (max-width:640px){
+    .topbar{ flex-wrap:wrap; gap:10px; padding:10px 14px; }
+    .brand .tag{ display:none; }
+    .brand h1{ font-size:18px; }
+    .tabs{
+      order:3; width:100%; display:flex; gap:6px; overflow-x:auto;
+      -webkit-overflow-scrolling:touch; padding-bottom:2px;
+    }
+    .tab-btn{ padding:8px 13px; font-size:12px; flex-shrink:0; }
+    .clock{ font-size:11px; }
+    .user-box{ gap:8px; }
+    .current-user{ display:none; }
+    .logout-btn{ padding:5px 9px; font-size:10.5px; }
+    .view{ padding:14px; }
+    .table-grid{ grid-template-columns:repeat(auto-fill, minmax(118px,1fr)); gap:9px; }
+    .table-card{ padding:12px 10px; }
+    .table-card .tno{ font-size:18px; }
+    .summary-cards{ grid-template-columns:1fr 1fr; gap:10px; }
+    .summary-card{ padding:14px 16px; }
+    .summary-card .s-value{ font-size:22px; }
+    .ticket-kasa{ max-width:100%; }
+    .qty-btn{ width:24px; height:24px; font-size:13px; }
+    .wa-row{ flex-wrap:wrap; }
+    .wa-btn{ width:100%; }
+    .kds-grid{ grid-template-columns:1fr; }
+    .expense-form{ flex-direction:column; }
+    .expense-form input, .expense-form button{ width:100%; }
+    #toast-wrap{ left:14px; right:14px; top:auto; bottom:14px; }
+    .toast{ max-width:100%; }
+  }
+  @media (max-width:380px){
+    .summary-cards{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand" style="justify-content:center; margin-bottom:4px;">
+      <h1>Ocakbaşı Kasa</h1>
+    </div>
+    <div class="login-sub">Devam etmek için giriş yapın</div>
+    <div class="login-form">
+      <input type="text" id="login-name" placeholder="Adınız">
+      <input type="password" id="login-pass" placeholder="Şifre" onkeydown="if(event.key==='Enter') document.getElementById('btn-login').click();">
+      <button id="btn-login">Giriş Yap</button>
+    </div>
+    <div class="login-hint">Admin şifresiyle veya kendi personel şifrenizle girin.</div>
+  </div>
+</div>
+
+<div id="app-shell">
+
+<div class="topbar">
+  <div class="brand">
+    <h1>Ocakbaşı Kasa</h1>
+    <span class="tag">Restoran Yönetim</span>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-view="masalar">Masalar</button>
+    <button class="tab-btn" data-view="mutfak">Mutfak Ekranı<span class="tab-badge" id="badge-mutfak" style="display:none;">0</span></button>
+    <button class="tab-btn" data-view="kasa">Kasa<span class="tab-badge" id="badge-kasa" style="display:none;">0</span></button>
+    <button class="tab-btn" data-view="gunsonu">Gün Sonu</button>
+    <button class="tab-btn" data-view="personel">Personel</button>
+    <button class="tab-btn" data-view="menuyonetim">Menü Yönetimi</button>
+  </div>
+  <div class="user-box">
+    <span class="clock" id="clock"></span>
+    <span class="current-user" id="current-user"></span>
+    <button class="logout-btn" id="btn-logout">Çıkış</button>
+  </div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<div class="view" id="view-root"></div>
+
+</div>
+
+<script>
+/* ============ VERİ ============ */
+// Not: MENU artık state.menu içinde tutulur (admin panelinden düzenlenebilir).
+const INITIAL_MENU = [
+  { cat: "Ana Yemekler", items: [
+    { id:"adana",  name:"Adana Kebap", price:280, photo:null },
+    { id:"urfa",   name:"Urfa Kebap", price:270, photo:null },
+    { id:"pirzola",name:"Kuzu Pirzola", price:420, photo:null },
+    { id:"tavuk",  name:"Tavuk Şiş", price:220, photo:null },
+    { id:"kofte",  name:"Izgara Köfte", price:230, photo:null },
+    { id:"lahmacun",name:"Lahmacun", price:90, photo:null },
+  ]},
+  { cat: "Başlangıçlar", items: [
+    { id:"mercimek", name:"Mercimek Çorbası", price:90, photo:null },
+    { id:"ezme",     name:"Acılı Ezme", price:70, photo:null },
+    { id:"humus",    name:"Humus", price:95, photo:null },
+    { id:"cacik",    name:"Cacık", price:75, photo:null },
+  ]},
+  { cat: "İçecekler", items: [
+    { id:"ayran",  name:"Ayran", price:40, photo:null },
+    { id:"kola",   name:"Kola (kutu)", price:50, photo:null },
+    { id:"su",     name:"Su", price:20, photo:null },
+    { id:"cay",    name:"Çay", price:25, photo:null },
+  ]},
+  { cat: "Tatlılar", items: [
+    { id:"baklava", name:"Baklava (dilim)", price:110, photo:null },
+    { id:"kunefe",  name:"Künefe", price:150, photo:null },
+  ]},
+];
+
+const QUICK_MESSAGES = [
+  "5 dakika gecikme olacak",
+  "Malzeme bitti, alternatif sorun",
+  "Sipariş hazır, alabilirsiniz",
+  "Lütfen masayı kontrol edin"
+];
+
+// Masa silme işlemi için admin şifresi — kendi şifrenizle değiştirin.
+// Not: Bu şifre dosyanın kaynak kodunda düz metin olarak durur, sayfa kaynağını
+// görebilen biri şifreyi görebilir. Gerçek/hassas bir kasa güvenliği gerekiyorsa
+// bunun yerine sunucu taraflı bir giriş sistemi kurulmalı.
+const ADMIN_PASSWORD = "1234";
+
+// Masa silme / taşıma bildirimlerinin gideceği admin WhatsApp numarası.
+const ADMIN_PHONE = "05338701847";
+
+function notifyAdmin(text){
+  const phone = normalizePhone(ADMIN_PHONE);
+  if(!phone) return;
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+function makeTable(no){
+  return {
+    no,
+    status: 'empty', // empty | ordering | kitchen | ready | payment
+    order: { items:{}, note:'' }, // items: id -> {name, price, qty}
+    kitchenStatus: null, // bekliyor | hazirlaniyor | hazir
+    sentAt: null,
+    messages: [], // {text, from, time}
+    whatsapp: ''  // masaya özel geçici whatsapp numarası
+  };
+}
+
+const state = {
+  tables: Array.from({length:10}, (_,i) => makeTable(i+1)),
+  menu: JSON.parse(JSON.stringify(INITIAL_MENU)),
+  activeView: 'masalar',
+  selectedTable: null,   // table object reference for order panel
+  kasaSelected: null,    // table no for kasa
+  salesLog: [],          // { tableNo, items:{id:{name,price,qty}}, total, time }
+  expenses: [],          // { desc, amount, time }
+  staff: [],             // { name, password, canDelete }
+  deleteLog: [],         // { tableNo, staffName, time }
+  adminUnlocked: false,
+  currentUser: null,     // { name, role: 'admin' | 'staff' }
+};
+
+/* ============ YARDIMCI ============ */
+function tl(n){ return '₺' + n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function getTable(no){ return state.tables.find(t => t.no === no); }
+function orderTotal(order){ return Object.values(order.items).reduce((s,l)=>s+l.price*l.qty,0); }
+function orderCount(order){ return Object.values(order.items).reduce((s,l)=>s+l.qty,0); }
+
+function statusLabel(s){
+  return { empty:'Boş', ordering:'Sipariş Alınıyor', kitchen:'Mutfakta', ready:'Hazır — Servise Çıksın', payment:'Ödeme Bekliyor' }[s];
+}
+function statusClass(s){
+  return { empty:'s-empty', ordering:'s-ordering', kitchen:'s-kitchen', ready:'s-ready', payment:'s-payment' }[s];
+}
+
+function buildMenuText(tableNo){
+  let text = `🍽️ *Ocakbaşı — Masa ${tableNo} Menü*\n\n`;
+  state.menu.forEach(group => {
+    text += `*${group.cat}*\n`;
+    group.items.forEach(it => {
+      text += `• ${it.name} — ${tl(it.price)}\n`;
+    });
+    text += `\n`;
+  });
+  text += `Siparişinizi masanızdaki garsona iletebilir veya bu sohbetten yazabilirsiniz. Afiyet olsun! 🙏`;
+  return text;
+}
+
+function normalizePhone(raw){
+  let digits = (raw || '').replace(/\D/g,'');
+  if(digits.length === 0) return null;
+  if(digits.startsWith('0')) digits = '90' + digits.slice(1);      // 0xxx -> 90xxx
+  else if(digits.startsWith('5') && digits.length === 10) digits = '90' + digits; // 5xx... -> 90 5xx
+  else if(!digits.startsWith('90')) digits = '90' + digits; // varsayılan TR kodu
+  return digits;
+}
+
+function sendMenuViaWhatsApp(tableNo, rawNumber){
+  const phone = normalizePhone(rawNumber);
+  if(!phone){
+    toast('Geçerli bir WhatsApp numarası girin.');
+    return;
+  }
+  const text = encodeURIComponent(buildMenuText(tableNo));
+  const url = `https://wa.me/${phone}?text=${text}`;
+  window.open(url, '_blank');
+
+  // Resimli müşteri menüsünü de yeni sekmede açar — personel oradan
+  // "Yazdır / PDF Kaydet" ile alıp WhatsApp sohbetine manuel sürükleyip ekleyebilir.
+  // Not: musteri-menu.html dosyasının bu dosya ile AYNI klasörde olması gerekir.
+  window.open('musteri-menu.html', '_blank');
+
+  toast(`Masa ${tableNo}: WhatsApp sohbeti ve resimli menü sayfası açıldı. Menü sayfasından PDF/ekran görüntüsü alıp sohbete sürükleyerek ekleyebilirsiniz.`);
+}
+
+function toast(msg, isMsg){
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (isMsg ? ' msg' : '');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=> el.remove(), 5000);
+}
+
+/* ============ RENDER: TOPBAR ============ */
+function renderTopbar(){
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view === state.activeView);
+  });
+  const kitchenCount = state.tables.filter(t=>t.status==='kitchen').length;
+  const readyCount = state.tables.filter(t=>t.status==='ready').length;
+  const badgeM = document.getElementById('badge-mutfak');
+  badgeM.style.display = kitchenCount+readyCount > 0 ? 'flex' : 'none';
+  badgeM.textContent = kitchenCount+readyCount;
+
+  const payCount = state.tables.filter(t=>t.status==='payment'||t.status==='ready').length;
+  const badgeK = document.getElementById('badge-kasa');
+  badgeK.style.display = payCount > 0 ? 'flex' : 'none';
+  badgeK.textContent = payCount;
+
+  const userEl = document.getElementById('current-user');
+  if(userEl){
+    userEl.textContent = state.currentUser
+      ? `👤 ${state.currentUser.name}${state.currentUser.role==='admin' ? ' (Admin)' : ''}`
+      : '';
+  }
+}
+
+function tickClock(){
+  document.getElementById('clock').textContent = new Date().toLocaleString('tr-TR', {
+    day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+}
+setInterval(tickClock, 1000); tickClock();
+
+/* ============ VIEW: MASALAR ============ */
+function renderMasalar(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Masalar</h2>`;
+  const grid = document.createElement('div');
+  grid.className = 'table-grid';
+
+  state.tables.forEach(t => {
+    const card = document.createElement('button');
+    card.className = 'table-card';
+    if(t.status==='ready') card.classList.add('card-ready');
+    if(t.status==='kitchen') card.classList.add('card-kitchen');
+    if(t.status==='payment') card.classList.add('card-payment');
+    const total = orderTotal(t.order);
+    const lastMsg = t.messages.length ? t.messages[t.messages.length-1] : null;
+    card.innerHTML = `
+      <div class="tno">Masa ${t.no}</div>
+      <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+      ${total>0 ? `<div class="ttotal">${tl(total)}</div>` : ''}
+      ${t.whatsapp ? `<div class="ttotal">📲 ${t.whatsapp}</div>` : ''}
+      ${lastMsg ? `<div class="tmsg">💬 ${lastMsg.text}</div>` : ''}
+    `;
+    card.addEventListener('click', () => openTable(t.no));
+    grid.appendChild(card);
+  });
+
+  wrap.appendChild(grid);
+  root.appendChild(wrap);
+}
+
+function openTable(no){
+  const t = getTable(no);
+  if(t.status === 'empty') t.status = 'ordering';
+  state.selectedTable = no;
+  state.activeView = 'masa-detay';
+  renderAll();
+}
+
+/* ============ VIEW: MASA DETAY (Sipariş Alma) ============ */
+function renderMasaDetay(root){
+  const t = getTable(state.selectedTable);
+  const wrap = document.createElement('div');
+
+  const back = document.createElement('button');
+  back.className = 'back-btn';
+  back.textContent = '← Masalara Dön';
+  back.addEventListener('click', () => { state.activeView='masalar'; renderAll(); });
+  wrap.appendChild(back);
+
+  const layout = document.createElement('div');
+  layout.className = 'order-layout';
+
+  // MENÜ
+  const menuBlock = document.createElement('div');
+  menuBlock.className = 'menu-block';
+  const canEdit = t.status === 'ordering';
+  state.menu.forEach(group => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'category';
+    catDiv.innerHTML = `<h3>${group.cat}</h3>`;
+    const itemsDiv = document.createElement('div');
+    itemsDiv.className = 'items-grid';
+    group.items.forEach(it => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn';
+      btn.disabled = !canEdit;
+      const thumbStyle = it.photo ? `style="background-image:url('${it.photo}');"` : '';
+      btn.innerHTML = `
+        <span class="item-thumb" ${thumbStyle}>${it.photo ? '' : '🍽️'}</span>
+        <span class="item-name">${it.name}</span>
+        <span class="item-price">${tl(it.price)}</span>
+      `;
+      btn.addEventListener('click', () => {
+        if(t.order.items[it.id]) t.order.items[it.id].qty += 1;
+        else t.order.items[it.id] = { name:it.name, price:it.price, qty:1 };
+        renderAll();
+      });
+      itemsDiv.appendChild(btn);
+    });
+    catDiv.appendChild(itemsDiv);
+    menuBlock.appendChild(catDiv);
+  });
+  layout.appendChild(menuBlock);
+
+  // FİŞ
+  const ticket = document.createElement('div');
+  ticket.className = 'ticket';
+
+  const pillClass = { ordering:'s-ordering', kitchen:'s-kitchen', ready:'s-ready', payment:'s-payment' }[t.status] || 's-ordering';
+  ticket.innerHTML = `
+    <div class="ticket-head">
+      <div class="tname">MASA ${t.no}</div>
+      <span class="status-pill ${pillClass}">${statusLabel(t.status)}</span>
+    </div>
+    <div class="ticket-body" id="tbody"></div>
+    <div class="note-field">
+      <label>Mutfağa Not</label>
+      <textarea id="order-note" rows="2" placeholder="örn: az acılı, glutensiz..." ${canEdit ? '' : 'disabled'}>${t.order.note}</textarea>
+    </div>
+    <div class="whatsapp-block">
+      <label>Müşteri WhatsApp No (geçici)</label>
+      <div class="wa-row">
+        <input type="tel" id="wa-number" placeholder="05xx xxx xx xx" value="${t.whatsapp}">
+        <button class="wa-btn" id="btn-wa-send">📲 WhatsApp + Resimli Menü</button>
+      </div>
+    </div>
+    <div class="ticket-totals">
+      <div class="trow"><span>Ara toplam</span><span>${tl(orderTotal(t.order))}</span></div>
+      <div class="trow grand"><span>TOPLAM</span><span>${tl(orderTotal(t.order))}</span></div>
+    </div>
+    <div class="ticket-actions">
+      <button class="btn btn-accept" id="btn-accept">Siparişi Kabul Et</button>
+      <button class="btn btn-send" id="btn-send" disabled>Mutfağa Gönder</button>
+    </div>
+    <div class="transfer-block" id="transfer-block" style="${t.status !== 'empty' ? '' : 'display:none;'}">
+      <button class="btn btn-transfer" id="btn-transfer-toggle">🔁 Masayı Taşı</button>
+      <div class="transfer-list" id="transfer-list" style="display:none;"></div>
+    </div>
+    <div class="delete-block" id="delete-block" style="${t.status !== 'empty' ? '' : 'display:none;'}">
+      <button class="btn btn-delete" id="btn-delete-toggle">🗑️ Masayı Sil</button>
+      <div class="delete-confirm" id="delete-confirm" style="display:none;">
+        <input type="text" id="delete-name" placeholder="Adınız" value="${state.currentUser ? state.currentUser.name : ''}">
+        <input type="password" id="delete-password" placeholder="Şifre">
+        <button id="btn-delete-confirm">Sil</button>
+        <button id="btn-delete-cancel">İptal</button>
+      </div>
+    </div>
+  `;
+  layout.appendChild(ticket);
+  wrap.appendChild(layout);
+  root.appendChild(wrap);
+
+  // fiş satırları
+  const tbody = ticket.querySelector('#tbody');
+  const entries = Object.entries(t.order.items);
+  if(entries.length === 0){
+    tbody.innerHTML = '<div class="empty-note">Fiş boş.<br>Soldan ürün seçin.</div>';
+  } else {
+    entries.forEach(([id,l]) => {
+      const row = document.createElement('div');
+      row.className = 'line';
+      row.innerHTML = `
+        <span class="l-name">${l.name}</span>
+        <span class="l-qty">
+          <button class="qty-btn" data-act="minus" data-id="${id}" ${canEdit?'':'disabled'}>−</button>
+          ${l.qty}
+          <button class="qty-btn" data-act="plus" data-id="${id}" ${canEdit?'':'disabled'}>+</button>
+        </span>
+        <span>${tl(l.price*l.qty)}</span>
+        <button class="l-remove" data-act="remove" data-id="${id}" ${canEdit?'':'style=display:none;'}>✕</button>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+  tbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if(!btn) return;
+    const id = btn.dataset.id, act = btn.dataset.act;
+    if(!canEdit) return;
+    if(act==='plus') t.order.items[id].qty += 1;
+    if(act==='minus'){ t.order.items[id].qty -= 1; if(t.order.items[id].qty<=0) delete t.order.items[id]; }
+    if(act==='remove') delete t.order.items[id];
+    renderAll();
+  });
+
+  ticket.querySelector('#order-note').addEventListener('input', (e) => {
+    t.order.note = e.target.value;
+  });
+
+  ticket.querySelector('#wa-number').addEventListener('input', (e) => {
+    t.whatsapp = e.target.value;
+  });
+  ticket.querySelector('#btn-wa-send').addEventListener('click', () => {
+    sendMenuViaWhatsApp(t.no, t.whatsapp);
+  });
+
+  const btnAccept = ticket.querySelector('#btn-accept');
+  const btnSend = ticket.querySelector('#btn-send');
+  btnAccept.disabled = t.status !== 'ordering' || orderCount(t.order) === 0;
+  btnSend.disabled = t.status !== 'kitchen-ready-to-send' && true; // placeholder, fixed below
+
+  // Kabul / gönderme akışı: 'ordering' -> kabul edilince buton 'send' aktif olur ama status hala ordering (kabul edilmiş ama gönderilmemiş)
+  // Basitlik için: order.accepted bayrağı kullanalım
+  btnAccept.disabled = t.status !== 'ordering' || orderCount(t.order) === 0 || t.order.accepted;
+  btnAccept.textContent = t.order.accepted ? 'Sipariş Kabul Edildi ✓' : 'Siparişi Kabul Et';
+  btnSend.disabled = !t.order.accepted || t.status !== 'ordering';
+
+  btnAccept.addEventListener('click', () => {
+    if(orderCount(t.order) === 0) return;
+    t.order.accepted = true;
+    toast(`Masa ${t.no}: Sipariş kabul edildi.`);
+    renderAll();
+  });
+
+  btnSend.addEventListener('click', () => {
+    t.status = 'kitchen';
+    t.kitchenStatus = 'bekliyor';
+    t.sentAt = Date.now();
+    toast(`Masa ${t.no}: Sipariş mutfağa iletildi.`);
+    renderAll();
+  });
+
+  const btnTransferToggle = ticket.querySelector('#btn-transfer-toggle');
+  const transferList = ticket.querySelector('#transfer-list');
+  if(btnTransferToggle){
+    btnTransferToggle.addEventListener('click', () => {
+      const empties = state.tables.filter(x => x.status === 'empty' && x.no !== t.no);
+      if(empties.length === 0){ toast('Taşınacak boş masa yok.'); return; }
+      const showing = transferList.style.display !== 'none';
+      transferList.style.display = showing ? 'none' : 'flex';
+      transferList.innerHTML = empties.map(x => `<button class="transfer-opt" data-no="${x.no}">Masa ${x.no}</button>`).join('');
+    });
+    transferList.addEventListener('click', (e) => {
+      const b = e.target.closest('.transfer-opt'); if(!b) return;
+      moveTable(t.no, parseInt(b.dataset.no));
+    });
+  }
+
+  const btnDeleteToggle = ticket.querySelector('#btn-delete-toggle');
+  const deleteConfirm = ticket.querySelector('#delete-confirm');
+  if(btnDeleteToggle){
+    btnDeleteToggle.addEventListener('click', () => {
+      const showing = deleteConfirm.style.display !== 'none';
+      deleteConfirm.style.display = showing ? 'none' : 'flex';
+    });
+    ticket.querySelector('#btn-delete-confirm').addEventListener('click', () => {
+      const enteredName = ticket.querySelector('#delete-name').value.trim();
+      const pass = ticket.querySelector('#delete-password').value;
+
+      if(!enteredName){
+        toast('Lütfen adınızı yazın.');
+        return;
+      }
+
+      let authorized = false;
+      if(pass === ADMIN_PASSWORD){
+        authorized = true; // admin şifresiyle herkes silebilir, adı girdiği isim olarak kaydedilir
+      } else {
+        const staff = state.staff.find(s => s.name === enteredName);
+        if(staff && staff.canDelete && staff.password === pass) authorized = true;
+      }
+
+      if(!authorized){
+        toast('Yanlış şifre veya yetki yok. Masa silinmedi.');
+        return;
+      }
+
+      const no = t.no;
+      state.deleteLog.push({ tableNo: no, staffName: enteredName, time: Date.now() });
+      state.tables = state.tables.map(x => x.no === no ? makeTable(no) : x);
+      toast(`Masa ${no} silindi (İşlemi yapan: ${enteredName}).`);
+      notifyAdmin(`🗑️ Masa ${no} silindi. İşlemi yapan: ${enteredName}`);
+      state.activeView = 'masalar';
+      renderAll();
+    });
+    ticket.querySelector('#btn-delete-cancel').addEventListener('click', () => {
+      deleteConfirm.style.display = 'none';
+      ticket.querySelector('#delete-password').value = '';
+    });
+  }
+}
+
+function moveTable(fromNo, toNo){
+  const from = getTable(fromNo);
+  const to = getTable(toNo);
+  if(!from || !to) return;
+  if(to.status !== 'empty'){ toast(`Masa ${toNo} boş değil, taşınamaz.`); return; }
+  to.status = from.status;
+  to.order = from.order;
+  to.kitchenStatus = from.kitchenStatus;
+  to.sentAt = from.sentAt;
+  to.messages = from.messages;
+  to.whatsapp = from.whatsapp;
+  state.tables = state.tables.map(x => x.no === fromNo ? makeTable(fromNo) : x);
+  state.selectedTable = toNo;
+  toast(`Masa ${fromNo} içeriği Masa ${toNo}'e taşındı.`);
+  notifyAdmin(`🔁 Masa ${fromNo} içeriği Masa ${toNo}'e taşındı.`);
+  renderAll();
+}
+
+/* ============ VIEW: MUTFAK EKRANI (KDS) ============ */
+function elapsed(ms){
+  const s = Math.floor((Date.now()-ms)/1000);
+  const m = Math.floor(s/60), r = s%60;
+  return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`;
+}
+
+function renderMutfak(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Mutfak Ekranı</h2>`;
+  const kdsWrap = document.createElement('div');
+  kdsWrap.className = 'kds-wrap';
+
+  const active = state.tables.filter(t => t.status === 'kitchen' || t.status === 'ready');
+  if(active.length === 0){
+    kdsWrap.innerHTML = '<div class="kds-empty">Mutfakta bekleyen sipariş yok.</div>';
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'kds-grid';
+    active.forEach(t => {
+      const card = document.createElement('div');
+      const ks = t.kitchenStatus;
+      card.className = 'kds-card ' + ks;
+      const itemsHtml = Object.values(t.order.items).map(l => `${l.qty}× ${l.name}`).join('<br>');
+      card.innerHTML = `
+        <div class="kds-top">
+          <span class="kds-table">MASA ${t.no}</span>
+          <span class="kds-timer" data-sentat="${t.sentAt}">${elapsed(t.sentAt)}</span>
+        </div>
+        <div class="kds-items">${itemsHtml}</div>
+        ${t.order.note ? `<div class="kds-note">📝 ${t.order.note}</div>` : ''}
+        <div class="kds-actions">
+          <button class="kds-btn prep" data-no="${t.no}" data-act="prep" ${ks!=='bekliyor'?'disabled':''}>Hazırlanıyor</button>
+          <button class="kds-btn ready" data-no="${t.no}" data-act="ready" ${ks!=='hazirlaniyor'?'disabled':''}>Hazır</button>
+        </div>
+        <div class="kds-msg-row" data-no="${t.no}"></div>
+      `;
+      const msgRow = card.querySelector('.kds-msg-row');
+      QUICK_MESSAGES.forEach(m => {
+        const b = document.createElement('button');
+        b.className = 'quick-msg';
+        b.textContent = m;
+        b.addEventListener('click', () => {
+          t.messages.push({ text:m, from:'mutfak', time:Date.now() });
+          toast(`Masa ${t.no}'e mesaj gönderildi: "${m}"`, true);
+          renderAll();
+        });
+        msgRow.appendChild(b);
+      });
+      grid.appendChild(card);
+    });
+    kdsWrap.appendChild(grid);
+  }
+  wrap.appendChild(kdsWrap);
+  root.appendChild(wrap);
+
+  kdsWrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-act]'); if(!btn) return;
+    const t = getTable(parseInt(btn.dataset.no));
+    if(btn.dataset.act === 'prep'){ t.kitchenStatus = 'hazirlaniyor'; }
+    if(btn.dataset.act === 'ready'){
+      t.kitchenStatus = 'hazir';
+      t.status = 'ready';
+      toast(`Masa ${t.no}: Sipariş hazır!`, true);
+    }
+    renderAll();
+  });
+}
+
+/* ============ VIEW: KASA ============ */
+function renderKasa(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Kasa</h2>`;
+
+  const payable = state.tables.filter(t => t.status === 'ready' || t.status === 'payment' || t.status === 'kitchen');
+  const listDiv = document.createElement('div');
+  listDiv.className = 'kasa-table-list';
+  if(payable.length === 0){
+    listDiv.innerHTML = '<div class="kasa-none">Ödeme bekleyen masa yok.</div>';
+  } else {
+    payable.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'kasa-row' + (state.kasaSelected===t.no ? ' selected' : '');
+      row.innerHTML = `<span>Masa ${t.no} — ${statusLabel(t.status)}</span><span>${tl(orderTotal(t.order))}</span>`;
+      row.addEventListener('click', () => { state.kasaSelected = t.no; renderAll(); });
+      listDiv.appendChild(row);
+    });
+  }
+  wrap.appendChild(listDiv);
+
+  if(state.kasaSelected && getTable(state.kasaSelected)){
+    const t = getTable(state.kasaSelected);
+    const total = orderTotal(t.order);
+
+    const ticket = document.createElement('div');
+    ticket.className = 'ticket';
+    ticket.classList.add('ticket-kasa');
+    ticket.innerHTML = `
+      <div class="ticket-head">
+        <div class="tname">MASA ${t.no} — ÖDEME</div>
+        <span class="status-pill ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+      </div>
+      <div class="ticket-body">
+        ${Object.values(t.order.items).map(l => `
+          <div class="line"><span class="l-name">${l.name} ×${l.qty}</span><span>${tl(l.price*l.qty)}</span></div>
+        `).join('')}
+      </div>
+      <div class="ticket-totals">
+        <div class="trow grand"><span>TOPLAM</span><span>${tl(total)}</span></div>
+      </div>
+      <div class="quick-cash" id="quick-cash"></div>
+      <div class="pay-row"><input type="number" id="cash-input" placeholder="Alınan nakit (₺)" min="0" step="0.01"></div>
+      <div class="change-line" id="change-line" style="display:none;"></div>
+      <div class="ticket-actions">
+        <button class="btn btn-pay" id="btn-pay">Ödemeyi Tamamla</button>
+      </div>
+    `;
+    wrap.appendChild(ticket);
+
+    const quickCash = ticket.querySelector('#quick-cash');
+    const roundUp = (n,step) => Math.ceil(n/step)*step;
+    [total, roundUp(total,50), roundUp(total,100), roundUp(total,200)]
+      .filter((v,i,arr)=>v>0 && arr.indexOf(v)===i).slice(0,4)
+      .forEach(v => {
+        const b = document.createElement('button');
+        b.textContent = 'Tam: ' + tl(v);
+        b.addEventListener('click', () => { cashInput.value = v; updateChange(); });
+        quickCash.appendChild(b);
+      });
+
+    const cashInput = ticket.querySelector('#cash-input');
+    const changeLine = ticket.querySelector('#change-line');
+    function updateChange(){
+      const cash = parseFloat(cashInput.value);
+      if(isNaN(cash)){ changeLine.style.display='none'; return; }
+      changeLine.style.display = 'flex';
+      const diff = cash - total;
+      if(diff >= 0){
+        changeLine.className = 'change-line ok';
+        changeLine.innerHTML = `<span>PARA ÜSTÜ</span><span>${tl(diff)}</span>`;
+      } else {
+        changeLine.className = 'change-line short';
+        changeLine.innerHTML = `<span>EKSİK ÖDEME</span><span>${tl(Math.abs(diff))}</span>`;
+      }
+    }
+    cashInput.addEventListener('input', updateChange);
+
+    ticket.querySelector('#btn-pay').addEventListener('click', () => {
+      const cash = parseFloat(cashInput.value);
+      if(isNaN(cash) || cash < total){
+        cashInput.style.outline = '2px solid var(--rust)';
+        setTimeout(()=> cashInput.style.outline='', 900);
+        return;
+      }
+      toast(`Masa ${t.no}: Ödeme alındı, para üstü ${tl(cash-total)}.`);
+      state.salesLog.push({
+        tableNo: t.no,
+        items: JSON.parse(JSON.stringify(t.order.items)),
+        total: total,
+        time: Date.now()
+      });
+      const no = t.no;
+      state.tables = state.tables.map(x => x.no===no ? makeTable(no) : x);
+      state.kasaSelected = null;
+      renderAll();
+    });
+  }
+
+  root.appendChild(wrap);
+}
+
+/* ============ VIEW: GÜN SONU ============ */
+function renderGunSonu(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Gün Sonu Raporu</h2>`;
+
+  const log = state.salesLog;
+  const totalRevenue = log.reduce((s, sale) => s + sale.total, 0);
+  const totalItems = log.reduce((s, sale) => s + Object.values(sale.items).reduce((a,l)=>a+l.qty,0), 0);
+  const totalTickets = log.length;
+  const totalExpenses = state.expenses.reduce((s,e) => s + e.amount, 0);
+  const netProfit = totalRevenue - totalExpenses;
+
+  if(log.length === 0 && state.expenses.length === 0){
+    wrap.innerHTML += '<div class="gunsonu-empty">Bugün henüz tamamlanmış ödeme veya gider yok.</div>';
+    root.appendChild(wrap);
+    return;
+  }
+
+  const cards = document.createElement('div');
+  cards.className = 'summary-cards';
+  cards.innerHTML = `
+    <div class="summary-card revenue">
+      <div class="s-label">Toplam Ciro</div>
+      <div class="s-value">${tl(totalRevenue)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Toplam Satılan Yemek/Ürün Adedi</div>
+      <div class="s-value">${totalItems}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Kapanan Masa / Fiş Sayısı</div>
+      <div class="s-value">${totalTickets}</div>
+    </div>
+    <div class="summary-card" style="border-color:var(--rust);">
+      <div class="s-label">Toplam Gider</div>
+      <div class="s-value" style="color:var(--rust);">${tl(totalExpenses)}</div>
+    </div>
+    <div class="summary-card" style="border-color:${netProfit>=0 ? 'var(--sage-2)' : 'var(--rust)'};">
+      <div class="s-label">Net Kâr (Ciro − Gider)</div>
+      <div class="s-value" style="color:${netProfit>=0 ? 'var(--sage-2)' : 'var(--rust)'};">${tl(netProfit)}</div>
+    </div>
+  `;
+  wrap.appendChild(cards);
+
+  // ürün bazlı kırılım
+  const byItem = {};
+  log.forEach(sale => {
+    Object.values(sale.items).forEach(l => {
+      if(!byItem[l.name]) byItem[l.name] = { qty:0, revenue:0 };
+      byItem[l.name].qty += l.qty;
+      byItem[l.name].revenue += l.qty * l.price;
+    });
+  });
+  const rows = Object.entries(byItem).sort((a,b) => b[1].qty - a[1].qty);
+
+  if(rows.length){
+    const table = document.createElement('table');
+    table.className = 'breakdown-table';
+    table.innerHTML = `
+      <thead><tr><th>Ürün</th><th>Adet</th><th>Ciro</th></tr></thead>
+      <tbody>
+        ${rows.map(([name, d]) => `<tr><td>${name}</td><td>${d.qty}</td><td>${tl(d.revenue)}</td></tr>`).join('')}
+      </tbody>
+    `;
+    wrap.appendChild(table);
+  }
+
+  // ===== GİDERLER BLOĞU =====
+  const expBlock = document.createElement('div');
+  expBlock.className = 'expense-block';
+  expBlock.innerHTML = `
+    <h3>Giderler</h3>
+    <div id="expense-list"></div>
+    <div class="expense-form">
+      <input type="text" name="desc" id="exp-desc" placeholder="örn: Sebze alımı, fatura, personel avansı...">
+      <input type="number" name="amount" id="exp-amount" placeholder="Tutar (₺)" min="0" step="0.01">
+      <button id="btn-add-expense">Gider Ekle</button>
+    </div>
+  `;
+  wrap.appendChild(expBlock);
+
+  const expList = expBlock.querySelector('#expense-list');
+  if(state.expenses.length === 0){
+    expList.innerHTML = '<div class="expense-empty">Bugün henüz gider girilmedi.</div>';
+  } else {
+    state.expenses.forEach((e, idx) => {
+      const row = document.createElement('div');
+      row.className = 'expense-row';
+      const time = new Date(e.time).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+      row.innerHTML = `<span>${time} — ${e.desc}</span><span>${tl(e.amount)}<button class="e-remove" data-idx="${idx}">✕</button></span>`;
+      expList.appendChild(row);
+    });
+  }
+  expList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.e-remove'); if(!btn) return;
+    state.expenses.splice(parseInt(btn.dataset.idx), 1);
+    renderAll();
+  });
+  expBlock.querySelector('#btn-add-expense').addEventListener('click', () => {
+    const descEl = expBlock.querySelector('#exp-desc');
+    const amtEl = expBlock.querySelector('#exp-amount');
+    const desc = descEl.value.trim();
+    const amount = parseFloat(amtEl.value);
+    if(!desc || isNaN(amount) || amount <= 0){
+      toast('Gider açıklaması ve geçerli bir tutar girin.');
+      return;
+    }
+    state.expenses.push({ desc, amount, time: Date.now() });
+    descEl.value=''; amtEl.value='';
+    renderAll();
+  });
+
+  // ===== YAPAY ZEKA ANALİZİ =====
+  const aiBlock = document.createElement('div');
+  aiBlock.className = 'ai-block';
+  aiBlock.innerHTML = `
+    <div class="ai-header"><span class="ai-badge">YZ</span> Yapay Zeka Analizi</div>
+    <button class="ai-btn" id="btn-ai">Günü Analiz Et</button>
+    <div id="ai-result"></div>
+  `;
+  wrap.appendChild(aiBlock);
+
+  aiBlock.querySelector('#btn-ai').addEventListener('click', () => runAIAnalysis({
+    totalRevenue, totalItems, totalTickets, totalExpenses, netProfit, rows, expenses: state.expenses
+  }));
+
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'reset-day-btn';
+  resetBtn.textContent = 'Günü Kapat ve Sıfırla';
+  resetBtn.addEventListener('click', () => {
+    if(confirm('Gün sonu raporu ve giderler sıfırlanacak, emin misiniz?')){
+      state.salesLog = [];
+      state.expenses = [];
+      toast('Gün sonu kaydı sıfırlandı, yeni güne başlandı.');
+      renderAll();
+    }
+  });
+  wrap.appendChild(resetBtn);
+
+  root.appendChild(wrap);
+}
+
+async function runAIAnalysis(data){
+  const resultDiv = document.getElementById('ai-result');
+  const btn = document.getElementById('btn-ai');
+  if(!resultDiv || !btn) return;
+  btn.disabled = true;
+  resultDiv.innerHTML = '<div class="ai-loading">Gün verileri analiz ediliyor...</div>';
+
+  const itemLines = data.rows.map(([name,d]) => `${name}: ${d.qty} adet, ${d.revenue.toFixed(2)} TL ciro`).join('\n');
+  const expenseLines = data.expenses.length
+    ? data.expenses.map(e => `${e.desc}: ${e.amount.toFixed(2)} TL`).join('\n')
+    : 'Gider girilmedi.';
+
+  const prompt = `Sen deneyimli bir restoran işletme danışmanısın. Aşağıdaki gün sonu verilerine bakarak KISA, net ve maddeler halinde bir Türkçe analiz yaz. Şunlara değin: en çok satan ürünler ve olası nedeni, ciro-gider dengesi, net kâr durumu hakkında yorum, dikkat çeken riskli noktalar (varsa) ve yarın için 2-3 somut öneri. Abartılı övgüden kaçın, samimi ama profesyonel ve öz bir dil kullan. Toplam 120-160 kelimeyi geçme.
+
+VERİLER:
+Toplam ciro: ${data.totalRevenue.toFixed(2)} TL
+Toplam satılan ürün adedi: ${data.totalItems}
+Kapanan masa/fiş sayısı: ${data.totalTickets}
+Toplam gider: ${data.totalExpenses.toFixed(2)} TL
+Net kâr: ${data.netProfit.toFixed(2)} TL
+
+Ürün bazlı satış:
+${itemLines || 'Satış yok.'}
+
+Giderler:
+${expenseLines}`;
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if(!response.ok) throw new Error('İstek başarısız: ' + response.status);
+    const resData = await response.json();
+    const text = (resData.content || [])
+      .map(block => block.type === 'text' ? block.text : '')
+      .filter(Boolean)
+      .join('\n');
+    resultDiv.innerHTML = `<div class="ai-result">${text || 'Analiz alınamadı.'}</div>`;
+  } catch(err){
+    resultDiv.innerHTML = `<div class="ai-error">Analiz oluşturulamadı: ${err.message}. Lütfen tekrar deneyin.</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ============ VIEW: PERSONEL ============ */
+function renderPersonel(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Personel Yönetimi</h2>`;
+
+  if(!state.adminUnlocked){
+    const gate = document.createElement('div');
+    gate.className = 'expense-block';
+    gate.style.maxWidth = '360px';
+    gate.innerHTML = `
+      <h3>Admin Girişi Gerekli</h3>
+      <div class="hint" style="font-size:12px;color:var(--dim);margin-bottom:10px;">
+        Personel ekleme ve yetkilendirme sadece admin şifresiyle açılır.
+      </div>
+      <div class="expense-form">
+        <input type="password" id="personel-gate-pass" placeholder="Admin şifresi" style="flex:2;">
+        <button id="btn-personel-gate">Giriş</button>
+      </div>
+    `;
+    wrap.appendChild(gate);
+    root.appendChild(wrap);
+    gate.querySelector('#btn-personel-gate').addEventListener('click', () => {
+      const pass = gate.querySelector('#personel-gate-pass').value;
+      if(pass === ADMIN_PASSWORD){
+        state.adminUnlocked = true;
+        renderAll();
+      } else {
+        toast('Yanlış admin şifresi.');
+      }
+    });
+    return;
+  }
+
+  // ===== PERSONEL EKLEME =====
+  const addBlock = document.createElement('div');
+  addBlock.className = 'expense-block';
+  addBlock.innerHTML = `
+    <h3>Yeni Personel Ekle</h3>
+    <div class="expense-form">
+      <input type="text" id="staff-name" placeholder="Personel adı">
+      <input type="password" id="staff-pass" placeholder="Personel şifresi">
+      <button id="btn-add-staff">Ekle</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--dim);margin-top:10px;">
+      <input type="checkbox" id="staff-can-delete" style="width:auto;"> Masa Silme yetkisi ver (sadece bu panele erişebilir)
+    </label>
+  `;
+  wrap.appendChild(addBlock);
+
+  addBlock.querySelector('#btn-add-staff').addEventListener('click', () => {
+    const nameEl = addBlock.querySelector('#staff-name');
+    const passEl = addBlock.querySelector('#staff-pass');
+    const canDelete = addBlock.querySelector('#staff-can-delete').checked;
+    const name = nameEl.value.trim();
+    const pass = passEl.value;
+    if(!name || !pass){ toast('Personel adı ve şifre girin.'); return; }
+    if(state.staff.some(s => s.name === name)){ toast('Bu isimde bir personel zaten var.'); return; }
+    state.staff.push({ name, password: pass, canDelete });
+    toast(`${name} personel listesine eklendi.`);
+    renderAll();
+  });
+
+  // ===== PERSONEL LİSTESİ =====
+  const listBlock = document.createElement('div');
+  listBlock.className = 'expense-block';
+  listBlock.innerHTML = `<h3>Personel Listesi</h3>`;
+  if(state.staff.length === 0){
+    listBlock.innerHTML += '<div class="expense-empty">Henüz personel eklenmedi.</div>';
+  } else {
+    state.staff.forEach((s, idx) => {
+      const row = document.createElement('div');
+      row.className = 'expense-row';
+      row.innerHTML = `
+        <span>${s.name} ${s.canDelete ? '— <span style="color:var(--sage-2);">Masa Silme Yetkili</span>' : '<span style="color:var(--dim);">(yetkisiz)</span>'}</span>
+        <span>
+          <button class="e-remove" data-idx="${idx}" data-act="toggle" title="Yetkiyi aç/kapat">🔁</button>
+          <button class="e-remove" data-idx="${idx}" data-act="remove" title="Personeli sil">✕</button>
+        </span>
+      `;
+      listBlock.appendChild(row);
+    });
+  }
+  wrap.appendChild(listBlock);
+
+  listBlock.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if(!btn) return;
+    const idx = parseInt(btn.dataset.idx);
+    if(btn.dataset.act === 'remove') state.staff.splice(idx, 1);
+    if(btn.dataset.act === 'toggle') state.staff[idx].canDelete = !state.staff[idx].canDelete;
+    renderAll();
+  });
+
+  // ===== SİLME GEÇMİŞİ =====
+  const logBlock = document.createElement('div');
+  logBlock.className = 'expense-block';
+  logBlock.innerHTML = `<h3>Son Masa Silme İşlemleri</h3>`;
+  if(state.deleteLog.length === 0){
+    logBlock.innerHTML += '<div class="expense-empty">Henüz silinen masa yok.</div>';
+  } else {
+    [...state.deleteLog].reverse().forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'expense-row';
+      const time = new Date(d.time).toLocaleString('tr-TR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+      row.innerHTML = `<span>Masa ${d.tableNo} — ${d.staffName}</span><span>${time}</span>`;
+      logBlock.appendChild(row);
+    });
+  }
+  wrap.appendChild(logBlock);
+
+  // ===== TÜM VERİLERİ SIFIRLA =====
+  const dangerBlock = document.createElement('div');
+  dangerBlock.className = 'expense-block';
+  dangerBlock.style.borderColor = 'var(--rust)';
+  dangerBlock.innerHTML = `
+    <h3 style="color:var(--rust);">Tehlikeli Bölge</h3>
+    <div class="hint" style="font-size:12px;color:var(--dim);margin-bottom:10px;">
+      Bu bilgisayarda kayıtlı tüm masalar, satışlar, giderler, personel ve menü fotoğrafları kalıcı olarak silinir.
+    </div>
+    <button class="reset-day-btn" id="btn-reset-all">Tüm Verileri Sıfırla (Fabrika Ayarları)</button>
+  `;
+  wrap.appendChild(dangerBlock);
+  dangerBlock.querySelector('#btn-reset-all').addEventListener('click', () => {
+    if(confirm('TÜM veriler (masalar, satışlar, personel, menü fotoğrafları) kalıcı olarak silinecek. Emin misiniz?')){
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+  });
+
+  root.appendChild(wrap);
+}
+
+/* ============ VIEW: MENÜ YÖNETİMİ ============ */
+function resizeAndCompress(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 300;
+        let w = img.width, h = img.height;
+        if(w > h && w > maxDim){ h = h*(maxDim/w); w = maxDim; }
+        else if(h > maxDim){ w = w*(maxDim/h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderMenuYonetimi(root){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<h2 class="section-title">Menü Yönetimi</h2>`;
+
+  if(!state.adminUnlocked){
+    const gate = document.createElement('div');
+    gate.className = 'expense-block';
+    gate.style.maxWidth = '360px';
+    gate.innerHTML = `
+      <h3>Admin Girişi Gerekli</h3>
+      <div class="expense-form">
+        <input type="password" id="menu-gate-pass" placeholder="Admin şifresi" style="flex:2;">
+        <button id="btn-menu-gate">Giriş</button>
+      </div>
+    `;
+    wrap.appendChild(gate);
+    root.appendChild(wrap);
+    gate.querySelector('#btn-menu-gate').addEventListener('click', () => {
+      const pass = gate.querySelector('#menu-gate-pass').value;
+      if(pass === ADMIN_PASSWORD){ state.adminUnlocked = true; renderAll(); }
+      else toast('Yanlış admin şifresi.');
+    });
+    return;
+  }
+
+  // ===== YENİ YEMEK EKLE =====
+  const addBlock = document.createElement('div');
+  addBlock.className = 'expense-block';
+  addBlock.innerHTML = `
+    <h3>Yeni Yemek Ekle</h3>
+    <div class="expense-form">
+      <input type="text" id="new-item-name" placeholder="Yemek adı" style="flex:2;min-width:160px;">
+      <input type="number" id="new-item-price" placeholder="Fiyat (₺)" min="0" step="0.01" style="flex:1;min-width:90px;">
+    </div>
+    <div class="expense-form">
+      <select id="new-item-cat" style="flex:1;min-width:160px;">
+        ${state.menu.map(g => `<option value="${g.cat}">${g.cat}</option>`).join('')}
+        <option value="__new__">＋ Yeni Kategori</option>
+      </select>
+      <input type="text" id="new-item-newcat" placeholder="Yeni kategori adı" style="flex:1;min-width:140px;display:none;">
+    </div>
+    <div class="expense-form">
+      <input type="file" id="new-item-photo" accept="image/*" style="flex:2;">
+      <button id="btn-add-item">Yemeği Ekle</button>
+    </div>
+  `;
+  wrap.appendChild(addBlock);
+
+  const catSelect = addBlock.querySelector('#new-item-cat');
+  const newCatInput = addBlock.querySelector('#new-item-newcat');
+  catSelect.addEventListener('change', () => {
+    newCatInput.style.display = catSelect.value === '__new__' ? 'block' : 'none';
+  });
+
+  addBlock.querySelector('#btn-add-item').addEventListener('click', async () => {
+    const name = addBlock.querySelector('#new-item-name').value.trim();
+    const price = parseFloat(addBlock.querySelector('#new-item-price').value);
+    let catName = catSelect.value === '__new__' ? newCatInput.value.trim() : catSelect.value;
+    if(!name || isNaN(price) || price <= 0 || !catName){
+      toast('Yemek adı, geçerli bir fiyat ve kategori girin.');
+      return;
+    }
+    let group = state.menu.find(g => g.cat === catName);
+    if(!group){ group = { cat: catName, items: [] }; state.menu.push(group); }
+
+    const newItem = { id: 'item_' + Date.now(), name, price, photo: null };
+    const file = addBlock.querySelector('#new-item-photo').files[0];
+    if(file){
+      try{ newItem.photo = await resizeAndCompress(file); }
+      catch(e){ toast('Fotoğraf işlenemedi, yemek fotoğrafsız eklendi.'); }
+    }
+    group.items.push(newItem);
+    toast(`${name} menüye eklendi.`);
+    renderAll();
+  });
+
+  // ===== MEVCUT YEMEKLER =====
+  const listBlock = document.createElement('div');
+  listBlock.className = 'expense-block';
+  listBlock.innerHTML = `<h3>Mevcut Yemekler</h3>`;
+
+  state.menu.forEach(group => {
+    const catTitle = document.createElement('div');
+    catTitle.style.cssText = 'font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mustard);margin:14px 0 6px;';
+    catTitle.textContent = group.cat;
+    listBlock.appendChild(catTitle);
+
+    if(group.items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'expense-empty';
+      empty.textContent = 'Bu kategoride yemek yok.';
+      listBlock.appendChild(empty);
+      return;
+    }
+
+    group.items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'expense-row';
+      row.style.alignItems = 'center';
+      row.innerHTML = `
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span class="item-thumb" style="${it.photo ? `background-image:url('${it.photo}');` : ''}">${it.photo ? '' : '🍽️'}</span>
+          ${it.name} — ${tl(it.price)}
+        </span>
+        <span>
+          <button class="e-remove" data-id="${it.id}" data-act="photo" title="Fotoğraf değiştir">📷</button>
+          <button class="e-remove" data-id="${it.id}" data-act="delete" title="Yemeği sil">✕</button>
+          <input type="file" accept="image/*" id="photo-input-${it.id}" style="display:none;">
+        </span>
+      `;
+      listBlock.appendChild(row);
+    });
+  });
+  wrap.appendChild(listBlock);
+
+  listBlock.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.act === 'photo'){
+      listBlock.querySelector('#photo-input-'+id).click();
+    }
+    if(btn.dataset.act === 'delete'){
+      state.menu.forEach(g => { g.items = g.items.filter(x => x.id !== id); });
+      toast('Yemek menüden silindi.');
+      renderAll();
+    }
+  });
+
+  listBlock.addEventListener('change', async (e) => {
+    if(e.target.type !== 'file') return;
+    const id = e.target.id.replace('photo-input-','');
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const dataUrl = await resizeAndCompress(file);
+      state.menu.forEach(g => { g.items.forEach(it => { if(it.id === id) it.photo = dataUrl; }); });
+      renderAll();
+    } catch(err){
+      toast('Fotoğraf yüklenemedi.');
+    }
+  });
+
+  root.appendChild(wrap);
+}
+
+/* ============ KALICI KAYIT (localStorage) ============ */
+// Not: Bu, sadece bu HTML dosyasını indirip kendi bilgisayarınızda/tarayıcınızda
+// açtığınızda düzgün çalışır. Aynı tarayıcıda tekrar açtığınızda veriler durur.
+// Farklı bir bilgisayardan veya "gizli sekme"den açarsanız veriler görünmez,
+// çünkü kayıt o an kullandığınız tarayıcıya özeldir, sunucuda tutulmaz.
+const STORAGE_KEY = 'ocakbasi-kasa-veri-v1';
+let _storageWarned = false;
+
+function saveState(){
+  try{
+    const dataToSave = {
+      tables: state.tables,
+      menu: state.menu,
+      salesLog: state.salesLog,
+      expenses: state.expenses,
+      staff: state.staff,
+      deleteLog: state.deleteLog
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+  } catch(e){
+    console.error('Kayıt hatası:', e);
+    if(!_storageWarned){
+      _storageWarned = true;
+      toast('Veriler kaydedilemedi (tarayıcı depolama alanı dolu olabilir). Çok sayıda fotoğraf varsa bazılarını kaldırmayı deneyin.');
+    }
+  }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data.tables) state.tables = data.tables;
+    if(data.menu) state.menu = data.menu;
+    if(data.salesLog) state.salesLog = data.salesLog;
+    if(data.expenses) state.expenses = data.expenses;
+    if(data.staff) state.staff = data.staff;
+    if(data.deleteLog) state.deleteLog = data.deleteLog;
+  } catch(e){
+    console.error('Yükleme hatası:', e);
+  }
+}
+
+/* ============ ANA RENDER ============ */
+function renderAll(){
+  saveState();
+  renderTopbar();
+  const root = document.getElementById('view-root');
+  root.innerHTML = '';
+  if(state.activeView === 'masalar') renderMasalar(root);
+  else if(state.activeView === 'masa-detay') renderMasaDetay(root);
+  else if(state.activeView === 'mutfak') renderMutfak(root);
+  else if(state.activeView === 'kasa') renderKasa(root);
+  else if(state.activeView === 'gunsonu') renderGunSonu(root);
+  else if(state.activeView === 'personel') renderPersonel(root);
+  else if(state.activeView === 'menuyonetim') renderMenuYonetimi(root);
+}
+
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => { state.activeView = b.dataset.view; renderAll(); });
+});
+
+setInterval(() => {
+  if(state.activeView === 'mutfak'){
+    document.querySelectorAll('.kds-timer').forEach(el => {
+      el.textContent = elapsed(parseInt(el.dataset.sentat));
+    });
+  }
+}, 1000);
+
+/* ============ GİRİŞ / ÇIKIŞ ============ */
+const SESSION_KEY = 'ocakbasi-kasa-oturum-v1';
+
+function tryLogin(name, pass){
+  if(!name){ toast('Lütfen adınızı yazın.'); return false; }
+  if(pass === ADMIN_PASSWORD){
+    state.currentUser = { name, role:'admin' };
+  } else {
+    const staff = state.staff.find(s => s.name === name && s.password === pass);
+    if(!staff){ toast('Ad veya şifre hatalı.'); return false; }
+    state.currentUser = { name: staff.name, role:'staff' };
+  }
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(state.currentUser)); } catch(e){}
+  document.body.classList.add('logged-in');
+  renderAll();
+  return true;
+}
+
+function restoreSession(){
+  try{
+    const raw = localStorage.getItem(SESSION_KEY);
+    if(!raw) return;
+    state.currentUser = JSON.parse(raw);
+    document.body.classList.add('logged-in');
+  } catch(e){ /* oturum yok */ }
+}
+
+function logout(){
+  state.currentUser = null;
+  try{ localStorage.removeItem(SESSION_KEY); } catch(e){}
+  document.body.classList.remove('logged-in');
+  document.getElementById('login-name').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+document.getElementById('btn-login').addEventListener('click', () => {
+  const name = document.getElementById('login-name').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  tryLogin(name, pass);
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  if(confirm('Çıkış yapmak istediğinize emin misiniz?')) logout();
+});
+
+loadState();
+restoreSession();
+renderAll();
+</script>
+</body>
+</html>
