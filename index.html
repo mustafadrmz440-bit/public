@@ -3,293 +3,299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#232420">
+<meta name="theme-color" content="#0B0F19">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ocakbaşı Kasa">
-<title>Ocakbaşı Kasa — Restoran Yönetim</title>
+<meta name="apple-mobile-web-app-title" content="Ocakbaşı POS">
+<title>Ocakbaşı POS — Modern Restoran Panel</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
 <!-- Firebase Compatibility Libraries -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
-  :root{
-    --board:#232420;
-    --board-2:#2c2d27;
-    --board-3:#34362e;
-    --chalk:#efe9da;
-    --dim:#a39d86;
-    --paper:#faf6ec;
-    --paper-2:#f1ead8;
-    --mustard:#c99a2e;
-    --rust:#a8402e;
-    --sage:#6b7a5e;
-    --sage-2:#8fa87a;
-    --line:#454639;
+  :root {
+    --bg-main: #0b0f19;
+    --bg-card: #111827;
+    --bg-card-hover: #1f2937;
+    --border: #1f2937;
+    --border-accent: #374151;
+    
+    --primary: #ff6b00;
+    --primary-glow: rgba(255, 107, 0, 0.25);
+    --primary-hover: #ff8533;
+    
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+    --danger: #ef4444;
+    --danger-bg: rgba(239, 68, 68, 0.12);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--board);
-    color:var(--chalk);
-    font-family:'Inter', sans-serif;
-    min-height:100vh;
-  }
-  button{font-family:inherit;}
 
-  /* ===== TOP BAR ===== */
-  .topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 26px;
-    background:var(--board-2);
-    border-bottom:1px solid var(--line);
-    position:sticky; top:0; z-index:20;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
-  .brand{ display:flex; align-items:baseline; gap:12px; }
-  .brand h1{
-    font-family:'Oswald', sans-serif; font-weight:700; font-size:22px; margin:0;
-    letter-spacing:0.5px;
-  }
-  .brand .tag{
-    font-family:'Courier Prime', monospace; font-size:11px; color:var(--mustard);
-    letter-spacing:2px; text-transform:uppercase;
-  }
-  .tabs{ display:flex; gap:6px; }
-  .tab-btn{
-    background:none; border:1px solid var(--line); color:var(--dim);
-    padding:9px 18px; border-radius:6px; cursor:pointer;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px;
-    letter-spacing:0.5px; position:relative;
-    transition:all .12s ease;
-  }
-  .tab-btn:hover{ color:var(--chalk); border-color:var(--mustard); }
-  .tab-btn.active{ background:var(--mustard); color:#232420; border-color:var(--mustard); }
-  .tab-badge{
-    position:absolute; top:-7px; right:-7px;
-    background:var(--rust); color:#fff; font-size:10px; font-weight:700;
-    border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;
-    font-family:'Inter', sans-serif;
-  }
-  .clock{ font-family:'Courier Prime', monospace; font-size:13px; color:var(--dim); }
-  .sync-status{ font-size:10px; padding:3px 8px; border-radius:12px; font-weight:600; font-family:'Courier Prime', monospace; text-transform:uppercase; margin-left:10px; }
-  .sync-online{ background:rgba(143,168,122,0.2); color:var(--sage-2); border:1px solid var(--sage-2); }
-  .sync-offline{ background:rgba(168,64,46,0.2); color:var(--rust); border:1px solid var(--rust); }
 
-  /* ===== GİRİŞ EKRANI ===== */
-  #login-screen{
-    position:fixed; inset:0; z-index:100; background:var(--board);
-    display:flex; align-items:center; justify-content:center;
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.04), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.03), transparent 40%);
-  }
-  body.logged-in #login-screen{ display:none; }
-  body:not(.logged-in) #app-shell{ display:none; }
-  .login-card{
-    background:var(--board-2); border:1px solid var(--line); border-radius:12px;
-    padding:36px 32px; width:100%; max-width:340px; box-shadow:0 24px 60px rgba(0,0,0,0.5);
-    text-align:center;
-  }
-  .login-sub{ font-size:13px; color:var(--dim); margin:6px 0 22px; }
-  .login-form{ display:flex; flex-direction:column; gap:10px; }
-  .login-form input{
-    font-family:'Inter', sans-serif; font-size:14px; padding:11px 12px;
-    border:1px solid var(--line); border-radius:6px; background:#1a1b17; color:var(--chalk);
-  }
-  .login-form button{
-    background:var(--mustard); color:#232420; border:none; padding:11px; border-radius:6px;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; cursor:pointer; margin-top:4px;
-  }
-  .login-form button:hover{ filter:brightness(1.08); }
-  .login-hint{ font-size:11px; color:var(--dim); margin-top:16px; line-height:1.6; }
+  button, input, textarea { font-family: inherit; }
 
-  .user-box{ display:flex; align-items:center; gap:12px; }
-  .current-user{
-    font-family:'Oswald', sans-serif; font-size:12.5px; font-weight:600; color:var(--mustard);
+  /* ===== MODERN TOP BAR ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #111827;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 30;
+    backdrop-filter: blur(12px);
   }
-  .logout-btn{
-    background:none; border:1px solid var(--line); color:var(--dim); padding:6px 12px;
-    border-radius:5px; cursor:pointer; font-size:11.5px; font-family:'Inter', sans-serif;
+
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--primary), #d946ef);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #fff;
+    box-shadow: 0 0 15px var(--primary-glow);
   }
-  .logout-btn:hover{ border-color:var(--rust); color:var(--rust); }
+  .brand h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  
+  .sync-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .sync-online { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+  .sync-offline { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+  .tabs { display: flex; gap: 8px; background: #0b0f19; padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
+  .tab-btn {
+    background: transparent; border: none; color: var(--text-muted);
+    padding: 8px 16px; border-radius: 8px; cursor: pointer;
+    font-weight: 600; font-size: 13px; position: relative;
+    transition: all 0.15s ease;
+  }
+  .tab-btn:hover { color: var(--text-main); }
+  .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 12px var(--primary-glow); }
+  
+  .tab-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--danger); color: #fff; font-size: 10px; font-weight: 800;
+    border-radius: 10px; padding: 2px 6px; min-width: 18px; text-align: center;
+  }
+
+  .user-box { display: flex; align-items: center; gap: 14px; }
+  .clock { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .current-user { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .logout-btn {
+    background: var(--bg-card-hover); border: 1px solid var(--border); color: var(--text-muted);
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .logout-btn:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
+
+  /* ===== LOGIN SCREEN ===== */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 100; background: var(--bg-main);
+    display: flex; align-items: center; justify-content: center;
+  }
+  body.logged-in #login-screen { display: none; }
+  body:not(.logged-in) #app-shell { display: none; }
+  
+  .login-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 40px 36px; width: 100%; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+  }
+  .login-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+  .login-form { display: flex; flex-direction: column; gap: 12px; }
+  .login-form input {
+    font-size: 14px; padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 10px; background: var(--bg-main); color: var(--text-main); outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .login-form input:focus { border-color: var(--primary); }
+  .login-form button {
+    background: var(--primary); color: #fff; border: none; padding: 12px;
+    border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer;
+    box-shadow: 0 4px 14px var(--primary-glow); transition: background 0.15s ease;
+  }
+  .login-form button:hover { background: var(--primary-hover); }
 
   /* ===== TOAST ===== */
-  #toast-wrap{
-    position:fixed; top:70px; right:24px; z-index:50;
-    display:flex; flex-direction:column; gap:8px;
+  #toast-wrap { position: fixed; top: 76px; right: 24px; z-index: 60; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--bg-card); color: var(--text-main); padding: 12px 18px; border-radius: 10px;
+    font-size: 13px; font-weight: 600; border: 1px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3); animation: slidein 0.2s ease;
   }
-  .toast{
-    background:var(--sage); color:#fff; padding:12px 18px; border-radius:6px;
-    font-size:13.5px; box-shadow:0 10px 26px rgba(0,0,0,0.35);
-    max-width:320px; animation:slidein .25s ease;
-  }
-  .toast.msg{ background:var(--mustard); color:#232420; font-weight:600; }
-  @keyframes slidein{ from{opacity:0; transform:translateX(20px);} to{opacity:1; transform:translateX(0);} }
+  @keyframes slidein { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
 
-  .view{ padding:26px; max-width:1400px; margin:0 auto; }
-  .view h2.section-title{
-    font-family:'Oswald', sans-serif; font-size:15px; letter-spacing:2.5px;
-    text-transform:uppercase; color:var(--mustard); margin:0 0 18px;
+  /* ===== MAIN CONTENT VIEW ===== */
+  .view { padding: 28px; max-width: 1440px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .section-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+
+  /* ===== TABLES GRID ===== */
+  .table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+  .table-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px; cursor: pointer; text-align: left; transition: all 0.15s ease;
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 135px;
+  }
+  .table-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+  .table-card .tno { font-size: 18px; font-weight: 800; color: var(--text-main); }
+  .table-card .tstatus {
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px;
+    display: inline-block; margin-top: 10px; width: fit-content; text-transform: uppercase;
+  }
+  .table-card .ttotal { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--primary); margin-top: 12px; }
+
+  .s-empty { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+  .s-ordering { background: var(--warning-bg); color: var(--warning); }
+  .s-kitchen { background: rgba(255, 107, 0, 0.15); color: var(--primary); }
+  .s-ready { background: var(--success-bg); color: var(--success); animation: pulse 1.5s infinite; }
+  .s-payment { background: var(--danger-bg); color: var(--danger); }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+
+  /* ===== ORDER LAYOUT ===== */
+  .order-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; }
+  @media (max-width: 960px) { .order-layout { grid-template-columns: 1fr; } }
+  
+  .back-btn {
+    background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted);
+    padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+    margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.15s ease;
+  }
+  .back-btn:hover { border-color: var(--primary); color: var(--text-main); }
+
+  .menu-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .category-title { font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin: 20px 0 12px; letter-spacing: 0.5px; }
+  .category:first-child .category-title { margin-top: 0; }
+  
+  .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .item-btn {
+    background: var(--bg-main); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;
+    transition: all 0.12s ease; gap: 8px; text-align: left;
+  }
+  .item-btn:hover { border-color: var(--primary); background: var(--bg-card-hover); transform: translateY(-2px); }
+  .item-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
+  .item-price { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--primary); }
+
+  /* TICKET / BILL */
+  .ticket {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .ticket-head { padding: 20px; border-bottom: 1px solid var(--border); text-align: center; }
+  .ticket-head .tname { font-size: 20px; font-weight: 800; }
+  .ticket-body { padding: 16px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .empty-note { text-align: center; color: var(--text-dim); font-size: 13px; padding: 30px 0; }
+  
+  .line {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background: var(--bg-main); border-radius: 10px; font-size: 13px;
+  }
+  .l-name { font-weight: 600; flex: 1; }
+  .l-qty { display: flex; align-items: center; gap: 8px; margin: 0 12px; }
+  .qty-btn {
+    background: var(--bg-card-hover); border: 1px solid var(--border); color: var(--text-main);
+    width: 24px; height: 24px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 700;
+  }
+  .qty-btn:hover { border-color: var(--primary); }
+
+  .field-block { padding: 0 20px 14px; }
+  .field-block label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .field-block textarea, .field-block input {
+    width: 100%; font-size: 13px; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 10px; background: var(--bg-main); color: var(--text-main); outline: none;
+  }
+  .field-block textarea:focus, .field-block input:focus { border-color: var(--primary); }
+
+  .wa-row { display: flex; gap: 8px; }
+  .wa-btn {
+    background: #25D366; color: #fff; border: none; padding: 0 16px; border-radius: 10px;
+    font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s ease;
+  }
+  .wa-btn:hover { opacity: 0.9; }
+
+  .ticket-totals { padding: 16px 20px; border-top: 1px solid var(--border); }
+  .trow { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--text-main); }
+  .trow span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--primary); }
+
+  .ticket-actions { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .btn {
+    font-weight: 700; font-size: 14px; padding: 12px; border: none; border-radius: 10px;
+    cursor: pointer; transition: all 0.15s ease; text-align: center;
+  }
+  .btn-send { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
+  .btn-send:hover { background: var(--primary-hover); }
+  .btn-pay { background: var(--success); color: #fff; }
+  .btn-pay:hover { opacity: 0.9; }
+
+  /* ===== KDS (KITCHEN DYNAMIC DASHBOARD) ===== */
+  .kds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .kds-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .kds-card.bekliyor { border-left: 4px solid var(--warning); }
+  .kds-card.hazirlaniyor { border-left: 4px solid var(--primary); }
+  .kds-card.hazir { border-left: 4px solid var(--success); }
+  
+  .kds-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .kds-table { font-size: 18px; font-weight: 800; }
+  .kds-items { font-size: 13px; line-height: 1.8; color: var(--text-muted); margin-bottom: 14px; }
+  .kds-actions { display: flex; gap: 8px; }
+  .kds-btn {
+    flex: 1; font-weight: 700; font-size: 12px; padding: 8px; border: none; border-radius: 8px; cursor: pointer; color: #fff;
+  }
+  .kds-btn.prep { background: var(--primary); }
+  .kds-btn.ready { background: var(--success); }
+
+  /* ===== SUMMARY & EXPENSES ===== */
+  .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .summary-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .summary-card .s-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .summary-card .s-value { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800; color: var(--primary); }
+
+  .expense-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-top: 24px; }
+  .expense-form { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .expense-form input {
+    font-size: 13px; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--bg-main); color: var(--text-main); outline: none;
+  }
+  .expense-form button {
+    background: var(--danger); color: #fff; border: none; padding: 10px 18px;
+    border-radius: 8px; font-weight: 700; cursor: pointer;
   }
 
-  /* ===== MASALAR GRID ===== */
-  .table-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px;
-  }
-  .table-card{
-    background:var(--board-2); border:2px solid var(--line); border-radius:10px;
-    padding:16px 14px; cursor:pointer; text-align:left; color:var(--chalk);
-    transition:all .12s ease; position:relative; width:100%;
-  }
-  .table-card:hover{ transform:translateY(-2px); border-color:var(--mustard); }
-  .table-card .tno{ font-family:'Oswald', sans-serif; font-size:22px; font-weight:700; }
-  .table-card .tstatus{
-    font-family:'Courier Prime', monospace; font-size:11px; letter-spacing:1px;
-    text-transform:uppercase; margin-top:8px; padding:3px 8px; border-radius:20px; display:inline-block;
-  }
-  .table-card .ttotal{ font-family:'Courier Prime', monospace; font-size:12px; color:var(--dim); margin-top:8px; }
-  .table-card .tmsg{
-    margin-top:8px; font-size:11px; color:var(--mustard); font-style:italic;
-    border-top:1px dashed var(--line); padding-top:6px;
-  }
-  .s-empty{ background:#3a3b32; color:#9a9682; }
-  .s-ordering{ background:#4a4326; color:var(--mustard); }
-  .s-kitchen{ background:#5a3d24; color:#f0a95c; }
-  .s-ready{ background:#3d4d34; color:var(--sage-2); animation:pulse 1.4s infinite; }
-  .s-payment{ background:#4a2b25; color:#e08672; }
-  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
-  .table-card.card-ready{ border-color:var(--sage-2); }
-  .table-card.card-kitchen{ border-color:#c17a35; }
-  .table-card.card-payment{ border-color:var(--rust); }
+  .expense-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 
-  /* ===== ORDER PANEL ===== */
-  .order-layout{ display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
-  @media (max-width:900px){ .order-layout{ grid-template-columns:1fr; } }
-  .back-btn{
-    background:none; border:1px solid var(--line); color:var(--dim); padding:7px 14px;
-    border-radius:6px; cursor:pointer; font-size:12.5px; margin-bottom:16px;
-  }
-  .back-btn:hover{ border-color:var(--mustard); color:var(--chalk); }
-
-  .menu-block .category h3{
-    font-family:'Oswald', sans-serif; font-size:13px; letter-spacing:2.5px; text-transform:uppercase;
-    color:var(--mustard); border-bottom:1px dashed #5a5c4c; padding-bottom:7px; margin:20px 0 10px;
-  }
-  .menu-block .category:first-child h3{ margin-top:0; }
-  .items-grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
-  @media (max-width:480px){ .items-grid{ grid-template-columns:1fr; } }
-  .item-btn{
-    display:flex; justify-content:space-between; align-items:center; gap:8px;
-    background:var(--board-2); border:1px solid var(--line); border-radius:6px;
-    padding:11px 13px; cursor:pointer; color:var(--chalk); text-align:left;
-    transition:all .12s ease;
-  }
-  .item-btn:hover{ border-color:var(--mustard); background:var(--board-3); transform:translateY(-1px); }
-  .item-name{ font-size:14px; flex:1; }
-  .item-price{ font-family:'Courier Prime', monospace; font-size:12.5px; color:var(--mustard); font-weight:700; white-space:nowrap; }
-
-  /* ticket */
-  .ticket{
-    background:var(--paper); color:var(--board); border-radius:6px; overflow:hidden;
-    display:flex; flex-direction:column; box-shadow:0 16px 34px rgba(0,0,0,0.4);
-    font-family:'Courier Prime', monospace;
-  }
-  .ticket-head{ text-align:center; padding:18px 18px 12px; border-bottom:1px dashed #b9b092; }
-  .ticket-head .tname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:18px; }
-  .ticket-body{ padding:12px 18px; max-height:320px; overflow-y:auto; }
-  .empty-note{ text-align:center; color:#9a927a; font-size:12.5px; padding:24px 8px; line-height:1.6; }
-  .line{ display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:7px 0; border-bottom:1px dotted #ddd4bc; align-items:center; }
-  .l-name{ flex:1; }
-  .l-qty{ display:flex; align-items:center; gap:5px; color:#6b6752; }
-  .qty-btn{
-    background:none; border:1px solid #b9b092; color:var(--board); width:19px; height:19px;
-    border-radius:4px; font-size:11px; cursor:pointer; font-family:'Courier Prime', monospace;
-  }
-  .qty-btn:hover{ background:#eee6cf; }
-  .l-remove{ background:none; border:none; color:var(--rust); cursor:pointer; font-size:13px; }
-
-  .note-field{ padding:0 18px 12px; }
-  .note-field textarea{
-    width:100%; font-family:'Inter', sans-serif; font-size:12.5px; padding:8px 10px;
-    border:1px solid #d9cfae; border-radius:5px; resize:none; background:#fffdf6; color:var(--board);
-  }
-  .note-field label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
-
-  .whatsapp-block{ padding:0 18px 12px; }
-  .whatsapp-block label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
-  .wa-row{ display:flex; gap:7px; }
-  .wa-row input{
-    flex:1; font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px;
-    border:1px solid #d9cfae; border-radius:5px; background:#fffdf6; color:var(--board);
-  }
-  .wa-btn{
-    background:#25D366; color:#0b3d22; border:none; padding:9px 13px; border-radius:5px;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; cursor:pointer; white-space:nowrap;
-  }
-
-  .ticket-totals{ padding:12px 18px 6px; border-top:1px dashed #b9b092; font-size:13px; }
-  .trow{ display:flex; justify-content:space-between; padding:3px 0; color:#5c5744; }
-  .trow.grand{ font-size:17px; font-weight:700; color:var(--board); padding-top:7px; border-top:1px solid #c9c0a4; margin-top:3px; }
-
-  .ticket-actions{ padding:12px 18px 20px; display:flex; flex-direction:column; gap:8px; }
-  .btn{
-    font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.5px; font-size:13.5px;
-    padding:11px 10px; border:none; border-radius:5px; cursor:pointer; transition:filter .12s ease;
-  }
-  .btn-accept{ background:var(--sage); color:#fff; }
-  .btn-send{ background:var(--mustard); color:#232420; }
-  .btn-pay{ background:var(--rust); color:#fff; }
-
-  /* ===== KDS (Mutfak) ===== */
-  .kds-wrap{ background:#111310; border-radius:10px; padding:20px; min-height:420px; }
-  .kds-empty{ color:#5f6357; text-align:center; padding:60px 20px; font-family:'Courier Prime', monospace; }
-  .kds-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
-  .kds-card{
-    background:#1b1d17; border:1px solid #33362a; border-radius:8px; padding:16px;
-    font-family:'Courier Prime', monospace; color:#e7e2ce;
-  }
-  .kds-card.bekliyor{ border-left:4px solid var(--mustard); }
-  .kds-card.hazirlaniyor{ border-left:4px solid #c17a35; }
-  .kds-card.hazir{ border-left:4px solid var(--sage-2); }
-  .kds-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
-  .kds-table{ font-family:'Oswald', sans-serif; font-size:17px; font-weight:700; color:#fff; }
-  .kds-items{ font-size:13px; line-height:1.7; margin-bottom:8px; }
-  .kds-actions{ display:flex; gap:6px; margin-bottom:8px; }
-  .kds-btn{
-    flex:1; font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; padding:8px;
-    border:none; border-radius:5px; cursor:pointer; color:#fff;
-  }
-  .kds-btn.prep{ background:#c17a35; }
-  .kds-btn.ready{ background:var(--sage-2); color:#1b1d17; }
-
-  /* ===== GÜN SONU & EXPENSES ===== */
-  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:26px; }
-  .summary-card{ background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:20px 22px; }
-  .summary-card .s-label{ font-family:'Oswald', sans-serif; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
-  .summary-card .s-value{ font-family:'Courier Prime', monospace; font-size:30px; font-weight:700; color:var(--mustard); }
-  .summary-card.revenue .s-value{ color:var(--sage-2); }
-
-  .expense-block{ background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:22px 0; }
-  .expense-row{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid var(--line); font-family:'Courier Prime', monospace; }
-  .expense-form{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-  .expense-form input{ font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px; border:1px solid var(--line); border-radius:5px; background:var(--board); color:var(--chalk); }
-  .expense-form button{ background:var(--rust); color:#fff; border:none; padding:9px 16px; border-radius:5px; cursor:pointer; font-family:'Oswald', sans-serif; font-weight:600; }
-
-  /* Mobil Uyum */
-  @media (max-width:640px){
-    .topbar{ flex-wrap:wrap; gap:10px; padding:10px 14px; }
-    .brand .tag{ display:none; }
-    .tabs{ order:3; width:100%; display:flex; gap:6px; overflow-x:auto; }
-    .tab-btn{ padding:8px 13px; font-size:12px; flex-shrink:0; }
-    .view{ padding:14px; }
-    .table-grid{ grid-template-columns:repeat(auto-fill, minmax(118px,1fr)); gap:9px; }
-    #toast-wrap{ left:14px; right:14px; top:auto; bottom:14px; }
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .topbar { flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+    .tabs { order: 3; width: 100%; overflow-x: auto; }
+    .tab-btn { font-size: 12px; padding: 6px 12px; flex-shrink: 0; }
+    .view { padding: 16px; }
+    .table-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   }
 </style>
 </head>
@@ -297,16 +303,16 @@
 
 <div id="login-screen">
   <div class="login-card">
-    <div class="brand" style="justify-content:center; margin-bottom:4px;">
-      <h1>Ocakbaşı Kasa</h1>
+    <div class="brand" style="justify-content: center; margin-bottom: 16px;">
+      <div class="brand-icon">O</div>
+      <h1>Ocakbaşı POS</h1>
     </div>
-    <div class="login-sub">Devam etmek için giriş yapın</div>
+    <div class="login-sub">Sisteme erişmek için giriş yapın</div>
     <div class="login-form">
-      <input type="text" id="login-name" placeholder="Adınız">
+      <input type="text" id="login-name" placeholder="Kullanıcı Adı">
       <input type="password" id="login-pass" placeholder="Şifre" onkeydown="if(event.key==='Enter') handleLogin();">
       <button id="btn-login" onclick="handleLogin()">Giriş Yap</button>
     </div>
-    <div class="login-hint">Admin şifresiyle (1234) veya isminizle girin.</div>
   </div>
 </div>
 
@@ -314,18 +320,22 @@
 
 <div class="topbar">
   <div class="brand">
-    <h1>Ocakbaşı Kasa</h1>
-    <span class="tag">Restoran Yönetim</span>
-    <span id="sync-indicator" class="sync-status sync-offline">Syncing...</span>
+    <div class="brand-icon">O</div>
+    <div>
+      <h1>Ocakbaşı POS</h1>
+    </div>
+    <span id="sync-indicator" class="sync-badge sync-offline">Sync...</span>
   </div>
+  
   <div class="tabs">
     <button class="tab-btn active" data-view="masalar" onclick="switchView('masalar')">Masalar</button>
-    <button class="tab-btn" data-view="mutfak" onclick="switchView('mutfak')">Mutfak Ekranı<span class="tab-badge" id="badge-mutfak" style="display:none;">0</span></button>
+    <button class="tab-btn" data-view="mutfak" onclick="switchView('mutfak')">Mutfak<span class="tab-badge" id="badge-mutfak" style="display:none;">0</span></button>
     <button class="tab-btn" data-view="kasa" onclick="switchView('kasa')">Kasa<span class="tab-badge" id="badge-kasa" style="display:none;">0</span></button>
     <button class="tab-btn" data-view="gunsonu" onclick="switchView('gunsonu')">Gün Sonu</button>
     <button class="tab-btn" data-view="personel" onclick="switchView('personel')">Personel</button>
-    <button class="tab-btn" data-view="menuyonetim" onclick="switchView('menuyonetim')">Menü Yönetimi</button>
+    <button class="tab-btn" data-view="menuyonetim" onclick="switchView('menuyonetim')">Menü</button>
   </div>
+  
   <div class="user-box">
     <span class="clock" id="clock"></span>
     <span class="current-user" id="current-user"></span>
@@ -387,7 +397,6 @@ function makeTable(no){
     status: 'empty',
     order: { items:{}, note:'' },
     kitchenStatus: null,
-    messages: [],
     whatsapp: ''
   };
 }
@@ -397,7 +406,6 @@ let state = {
   menu: INITIAL_MENU,
   activeView: 'masalar',
   selectedTableNo: null,
-  kasaSelectedNo: null,
   salesLog: [],
   expenses: [],
   currentUser: null
@@ -414,8 +422,10 @@ db.collection("restaurant").doc("live_state")
       if(cloud.salesLog) state.salesLog = cloud.salesLog;
       if(cloud.expenses) state.expenses = cloud.expenses;
       
-      indicator.textContent = "🟢 Live Sync Active";
-      indicator.className = "sync-status sync-online";
+      if(indicator) {
+        indicator.textContent = "● CANLI SYNC";
+        indicator.className = "sync-badge sync-online";
+      }
       renderUI();
     } else {
       saveStateToCloud();
@@ -423,8 +433,10 @@ db.collection("restaurant").doc("live_state")
   }, (err) => {
     console.error("Sync Error:", err);
     const indicator = document.getElementById('sync-indicator');
-    indicator.textContent = "🔴 Sync Error";
-    indicator.className = "sync-status sync-offline";
+    if(indicator) {
+      indicator.textContent = "● OFFLINE";
+      indicator.className = "sync-badge sync-offline";
+    }
   });
 
 function saveStateToCloud() {
@@ -441,21 +453,30 @@ function tl(n){ return '₺' + (n || 0).toLocaleString('tr-TR', {minimumFraction
 function getTable(no){ return state.tables.find(t => t.no === no); }
 function orderTotal(order){ return Object.values(order.items || {}).reduce((s,l)=>s+l.price*l.qty,0); }
 function statusLabel(s){
-  return { empty:'Boş', ordering:'Sipariş Alınıyor', kitchen:'Mutfakta', ready:'Hazır — Servise Çıksın', payment:'Ödeme Bekliyor' }[s] || 'Boş';
+  return { empty:'Boş', ordering:'Sipariş', kitchen:'Mutfakta', ready:'Hazır', payment:'Ödeme' }[s] || 'Boş';
 }
 function statusClass(s){
   return { empty:'s-empty', ordering:'s-ordering', kitchen:'s-kitchen', ready:'s-ready', payment:'s-payment' }[s] || 's-empty';
 }
 
-function toast(msg, isMsg){
+function toast(msg){
   const wrap = document.getElementById('toast-wrap');
   if(!wrap) return;
   const el = document.createElement('div');
-  el.className = 'toast' + (isMsg ? ' msg' : '');
+  el.className = 'toast';
   el.textContent = msg;
   wrap.appendChild(el);
-  setTimeout(()=> el.remove(), 4000);
+  setTimeout(()=> el.remove(), 3500);
 }
+
+function updateClock(){
+  const clockEl = document.getElementById('clock');
+  if(clockEl) {
+    const now = new Date();
+    clockEl.textContent = now.toLocaleTimeString('tr-TR');
+  }
+}
+setInterval(updateClock, 1000);
 
 /* ============ RENDER LOGIC ============ */
 function renderUI() {
@@ -489,31 +510,42 @@ function renderTopbar(){
   const kitchenCount = state.tables.filter(t=>t.status==='kitchen').length;
   const readyCount = state.tables.filter(t=>t.status==='ready').length;
   const badgeM = document.getElementById('badge-mutfak');
-  badgeM.style.display = kitchenCount+readyCount > 0 ? 'flex' : 'none';
-  badgeM.textContent = kitchenCount+readyCount;
+  if(badgeM) {
+    badgeM.style.display = kitchenCount+readyCount > 0 ? 'inline-block' : 'none';
+    badgeM.textContent = kitchenCount+readyCount;
+  }
 
   const payCount = state.tables.filter(t=>t.status==='payment'||t.status==='ready').length;
   const badgeK = document.getElementById('badge-kasa');
-  badgeK.style.display = payCount > 0 ? 'flex' : 'none';
-  badgeK.textContent = payCount;
+  if(badgeK) {
+    badgeK.style.display = payCount > 0 ? 'inline-block' : 'none';
+    badgeK.textContent = payCount;
+  }
 
   const userEl = document.getElementById('current-user');
   if(userEl && state.currentUser){
-    userEl.textContent = `👤 ${state.currentUser}`;
+    userEl.textContent = state.currentUser;
   }
 }
 
-/* ============ VIEWS IMPLEMENTATION ============ */
+/* ============ VIEWS ============ */
 
 // 1. MASALAR GRID
 function renderMasalarGrid(root){
-  let html = `<h2 class="section-title">Masalar</h2><div class="table-grid">`;
+  let html = `
+    <div class="section-header">
+      <h2 class="section-title">Masalar Overview</h2>
+    </div>
+    <div class="table-grid">
+  `;
   state.tables.forEach(t => {
     const total = orderTotal(t.order);
     html += `
-      <div class="table-card ${t.status==='ready'?'card-ready':''} ${t.status==='kitchen'?'card-kitchen':''}" onclick="state.selectedTableNo=${t.no}; renderUI();">
-        <div class="tno">Masa ${t.no}</div>
-        <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+      <div class="table-card" onclick="state.selectedTableNo=${t.no}; renderUI();">
+        <div>
+          <div class="tno">Masa ${t.no}</div>
+          <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+        </div>
         ${total>0 ? `<div class="ttotal">${tl(total)}</div>` : ''}
       </div>
     `;
@@ -531,11 +563,11 @@ function renderOrderPanel(root){
     <button class="back-btn" onclick="state.selectedTableNo=null; renderUI();">← Masalara Dön</button>
     <div class="order-layout">
       <div class="menu-block">
-        <h2 class="section-title">Masa ${t.no} - Sipariş Al</h2>
+        <h2 class="section-title" style="margin-bottom:16px;">Masa ${t.no} — Sipariş Seçimi</h2>
   `;
 
   state.menu.forEach(cat => {
-    html += `<div class="category"><h3>${cat.cat}</h3><div class="items-grid">`;
+    html += `<div class="category"><div class="category-title">${cat.cat}</div><div class="items-grid">`;
     cat.items.forEach(item => {
       html += `
         <div class="item-btn" onclick="addItem(${t.no}, '${item.id}', '${item.name}', ${item.price})">
@@ -551,15 +583,15 @@ function renderOrderPanel(root){
     <div>
       <div class="ticket">
         <div class="ticket-head">
-          <div class="tname">MASA ${t.no} ADİSYON</div>
-          <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
+          <div class="tname">Masa ${t.no} Adisyon</div>
+          <span class="tstatus ${statusClass(t.status)}" style="margin-top:6px;">${statusLabel(t.status)}</span>
         </div>
         <div class="ticket-body">
   `;
 
   const itemsArr = Object.entries(t.order.items || {});
   if(itemsArr.length === 0){
-    html += `<div class="empty-note">Henüz ürün eklenmedi.</div>`;
+    html += `<div class="empty-note">Henüz eklenmiş ürün bulunmuyor.</div>`;
   } else {
     itemsArr.forEach(([id, item]) => {
       html += `
@@ -570,7 +602,7 @@ function renderOrderPanel(root){
             <b>${item.qty}</b>
             <button class="qty-btn" onclick="updateQty(${t.no}, '${id}', 1)">+</button>
           </div>
-          <b>${tl(item.price * item.qty)}</b>
+          <b style="font-family:'JetBrains Mono';">${tl(item.price * item.qty)}</b>
         </div>
       `;
     });
@@ -578,9 +610,20 @@ function renderOrderPanel(root){
 
   html += `
         </div>
+        <div class="field-block">
+          <label>Sipariş Notu</label>
+          <textarea id="order-note" rows="2" placeholder="Örn: Az acılı, buzsuz kola..." onchange="updateNote(${t.no}, this.value)">${t.order.note || ''}</textarea>
+        </div>
+        <div class="field-block">
+          <label>WhatsApp Adisyon Gönder</label>
+          <div class="wa-row">
+            <input type="tel" id="wa-phone" placeholder="905xxxxxxxxx" value="${t.whatsapp || ''}" onchange="updatePhone(${t.no}, this.value)">
+            <button class="wa-btn" onclick="sendWhatsApp(${t.no})">Gönder</button>
+          </div>
+        </div>
         <div class="ticket-totals">
-          <div class="trow grand">
-            <span>TOPLAM:</span>
+          <div class="trow">
+            <span>Toplam:</span>
             <span>${tl(total)}</span>
           </div>
         </div>
@@ -603,7 +646,7 @@ function addItem(tableNo, id, name, price) {
   } else {
     t.order.items[id] = { name, price, qty: 1 };
   }
-  t.status = 'ordering';
+  if(t.status === 'empty') t.status = 'ordering';
   saveStateToCloud();
 }
 
@@ -615,6 +658,37 @@ function updateQty(tableNo, id, delta) {
   }
   if(Object.keys(t.order.items).length === 0) t.status = 'empty';
   saveStateToCloud();
+}
+
+function updateNote(tableNo, note) {
+  const t = getTable(tableNo);
+  t.order.note = note;
+  saveStateToCloud();
+}
+
+function updatePhone(tableNo, phone) {
+  const t = getTable(tableNo);
+  t.whatsapp = phone;
+  saveStateToCloud();
+}
+
+function sendWhatsApp(tableNo) {
+  const t = getTable(tableNo);
+  if (!t.whatsapp) {
+    toast("Lütfen telefon numarası girin!");
+    return;
+  }
+  const total = orderTotal(t.order);
+  let text = `*OCAKBAŞI RESTORAN ADİSYON*\n*Masa:* ${t.no}\n----------------------------------\n`;
+  Object.values(t.order.items || {}).forEach(i => {
+    text += `${i.name} x${i.qty} = ₺${(i.price * i.qty).toFixed(2)}\n`;
+  });
+  if(t.order.note) text += `\n*Not:* ${t.order.note}\n`;
+  text += `----------------------------------\n*TOPLAM TUTAR:* ₺${total.toFixed(2)}\n\nAfiyet olsun!`;
+  
+  const cleanPhone = t.whatsapp.replace(/[^0-9]/g, '');
+  const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
 }
 
 function sendToKitchen(tableNo) {
@@ -638,33 +712,38 @@ function clearTable(tableNo) {
   t.order = { items:{}, note:'' };
   t.status = 'empty';
   t.kitchenStatus = null;
+  t.whatsapp = '';
   state.selectedTableNo = null;
   toast(`Masa ${tableNo} kapatıldı.`);
   saveStateToCloud();
 }
 
-// 3. KDS / MUTFAK EKRANI
+// 3. KDS MUTFAK
 function renderMutfak(root){
   const kitchenTables = state.tables.filter(t => t.status === 'kitchen' || t.status === 'ready');
-  let html = `<h2 class="section-title">Mutfak Ekranı (KDS)</h2><div class="kds-wrap">`;
+  let html = `<h2 class="section-title" style="margin-bottom:20px;">Mutfak Ekranı (KDS)</h2>`;
 
   if(kitchenTables.length === 0){
-    html += `<div class="kds-empty">Mutfakta bekleyen sipariş yok.</div>`;
+    html += `<div style="text-align:center; padding:60px; color:var(--text-dim);">Mutfakta aktif sipariş bulunmuyor.</div>`;
   } else {
     html += `<div class="kds-grid">`;
     kitchenTables.forEach(t => {
       html += `
         <div class="kds-card ${t.kitchenStatus || 'bekliyor'}">
-          <div class="kds-top">
-            <span class="kds-table">MASA ${t.no}</span>
-            <span style="font-size:11px; text-transform:uppercase;">${t.kitchenStatus || 'bekliyor'}</span>
-          </div>
-          <div class="kds-items">
+          <div>
+            <div class="kds-top">
+              <span class="kds-table">MASA ${t.no}</span>
+              <span style="font-size:11px; text-transform:uppercase; font-weight:700;">${t.kitchenStatus || 'bekliyor'}</span>
+            </div>
+            <div class="kds-items">
       `;
       Object.values(t.order.items || {}).forEach(item => {
         html += `<div>• ${item.name} x<b>${item.qty}</b></div>`;
       });
-      html += `</div>
+      if(t.order.note) {
+        html += `<div style="color:var(--primary); margin-top:8px; font-weight:600;">Not: ${t.order.note}</div>`;
+      }
+      html += `</div></div>
           <div class="kds-actions">
             <button class="kds-btn prep" onclick="setKitchenStatus(${t.no}, 'hazirlaniyor')">Hazırlanıyor</button>
             <button class="kds-btn ready" onclick="setKitchenStatus(${t.no}, 'hazir')">Hazır</button>
@@ -674,7 +753,6 @@ function renderMutfak(root){
     });
     html += `</div>`;
   }
-  html += `</div>`;
   root.innerHTML = html;
 }
 
@@ -688,19 +766,21 @@ function setKitchenStatus(tableNo, kStatus){
 
 // 4. KASA
 function renderKasa(root){
-  let html = `<h2 class="section-title">Kasa İşlemleri</h2>`;
+  let html = `<h2 class="section-title" style="margin-bottom:20px;">Kasa Bekleyen Adisyonlar</h2>`;
   const activeTables = state.tables.filter(t => orderTotal(t.order) > 0);
 
   if(activeTables.length === 0){
-    html += `<div class="kds-empty">Açık adisyon bulunmuyor.</div>`;
+    html += `<div style="text-align:center; padding:60px; color:var(--text-dim);">Ödeme bekleyen masa yok.</div>`;
   } else {
     html += `<div class="table-grid">`;
     activeTables.forEach(t => {
       html += `
         <div class="table-card" onclick="clearTable(${t.no})">
-          <div class="tno">Masa ${t.no}</div>
-          <div class="ttotal">${tl(orderTotal(t.order))}</div>
-          <button class="btn btn-pay" style="margin-top:10px; width:100%;">Ödeme Al / Kapat</button>
+          <div>
+            <div class="tno">Masa ${t.no}</div>
+            <div class="ttotal" style="margin-top:8px;">${tl(orderTotal(t.order))}</div>
+          </div>
+          <button class="btn btn-pay" style="margin-top:14px; width:100%; font-size:12px; padding:8px;">Tahsil Et & Kapat</button>
         </div>
       `;
     });
@@ -709,21 +789,21 @@ function renderKasa(root){
   root.innerHTML = html;
 }
 
-// 5. GÜN SONU & EXPENSES
+// 5. GÜN SONU
 function renderGunSonu(root){
   const totalRevenue = state.salesLog.reduce((s, x) => s + x.total, 0);
   const totalExpense = state.expenses.reduce((s, x) => s + x.amount, 0);
 
   let html = `
-    <h2 class="section-title">Gün Sonu Raporu</h2>
+    <h2 class="section-title" style="margin-bottom:20px;">Gün Sonu Raporu</h2>
     <div class="summary-cards">
-      <div class="summary-card revenue">
+      <div class="summary-card">
         <div class="s-label">Toplam Ciro</div>
-        <div class="s-value">${tl(totalRevenue)}</div>
+        <div class="s-value" style="color:var(--success);">${tl(totalRevenue)}</div>
       </div>
       <div class="summary-card">
         <div class="s-label">Toplam Gider</div>
-        <div class="s-value" style="color:var(--rust);">${tl(totalExpense)}</div>
+        <div class="s-value" style="color:var(--danger);">${tl(totalExpense)}</div>
       </div>
       <div class="summary-card">
         <div class="s-label">Net Kazanç</div>
@@ -732,17 +812,17 @@ function renderGunSonu(root){
     </div>
 
     <div class="expense-block">
-      <h3>Gider Ekle</h3>
+      <h3 style="font-size:16px; font-weight:700;">Gider Kaydı Ekle</h3>
       <div class="expense-form">
-        <input type="text" id="exp-desc" placeholder="Gider açıklaması...">
-        <input type="number" id="exp-amt" placeholder="Tutar (₺)">
-        <button onclick="addExpense()">Gider Kaydet</button>
+        <input type="text" id="exp-desc" placeholder="Gider açıklaması..." style="flex:2;">
+        <input type="number" id="exp-amt" placeholder="Tutar (₺)" style="flex:1;">
+        <button onclick="addExpense()">Gider Ekle</button>
       </div>
-      <div style="margin-top:15px;">
+      <div style="margin-top:20px;">
   `;
 
-  state.expenses.forEach((e, idx) => {
-    html += `<div class="expense-row"><span>${e.desc}</span><b>${tl(e.amount)}</b></div>`;
+  state.expenses.forEach((e) => {
+    html += `<div class="expense-row"><span>${e.desc}</span><b style="font-family:'JetBrains Mono';">${tl(e.amount)}</b></div>`;
   });
 
   html += `</div></div>`;
@@ -750,8 +830,10 @@ function renderGunSonu(root){
 }
 
 function addExpense(){
-  const desc = document.getElementById('exp-desc').value;
-  const amount = parseFloat(document.getElementById('exp-amt').value);
+  const descEl = document.getElementById('exp-desc');
+  const amtEl = document.getElementById('exp-amt');
+  const desc = descEl ? descEl.value : '';
+  const amount = amtEl ? parseFloat(amtEl.value) : 0;
   if(desc && amount){
     state.expenses.push({ desc, amount, time: new Date().toLocaleTimeString('tr-TR') });
     saveStateToCloud();
@@ -760,24 +842,53 @@ function addExpense(){
 
 // 6. PERSONEL & MENU MANAGEMENT
 function renderPersonel(root){
-  root.innerHTML = `<h2 class="section-title">Personel Yönetimi</h2><p style="color:var(--dim);">Aktif Kullanıcı: <b>${state.currentUser || 'Giriş Yapılmadı'}</b></p>`;
+  root.innerHTML = `
+    <h2 class="section-title" style="margin-bottom:20px;">Personel Paneli</h2>
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:24px; max-width:400px;">
+      <p style="color:var(--text-muted); margin-bottom:16px;">Oturum Açan Kullanıcı: <b style="color:var(--primary);">${state.currentUser || 'Giriş Yapılmadı'}</b></p>
+      <button class="logout-btn" onclick="handleLogout()" style="padding:10px 20px;">Oturumu Kapat</button>
+    </div>
+  `;
 }
 
 function renderMenuYonetim(root){
-  let html = `<h2 class="section-title">Menü Yönetimi</h2>`;
+  let html = `<h2 class="section-title" style="margin-bottom:20px;">Menü ve Fiyat Düzenleme</h2>`;
   state.menu.forEach((cat, cIdx) => {
-    html += `<h3 style="color:var(--mustard); margin-top:15px;">${cat.cat}</h3>`;
+    html += `<div style="font-size:14px; font-weight:800; color:var(--primary); margin-top:24px; text-transform:uppercase;">${cat.cat}</div>`;
     cat.items.forEach((item, iIdx) => {
       html += `
-        <div style="display:flex; gap:10px; margin-bottom:8px; align-items:center;">
-          <input type="text" value="${item.name}" style="background:var(--board-2); border:1px solid var(--line); color:#fff; padding:6px; border-radius:4px;" onchange="state.menu[${cIdx}].items[${iIdx}].name=this.value; saveStateToCloud();">
-          <input type="number" value="${item.price}" style="background:var(--board-2); border:1px solid var(--line); color:#fff; padding:6px; border-radius:4px; width:90px;" onchange="state.menu[${cIdx}].items[${iIdx}].price=parseFloat(this.value); saveStateToCloud();">
-          <span>₺</span>
+        <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
+          <input type="text" value="${item.name}" style="background:var(--bg-card); border:1px solid var(--border); color:#fff; padding:10px 12px; border-radius:8px; flex:1;" onchange="updateMenuItemName(${cIdx}, ${iIdx}, this.value)">
+          <input type="number" value="${item.price}" style="background:var(--bg-card); border:1px solid var(--border); color:#fff; padding:10px 12px; border-radius:8px; width:110px;" onchange="updateMenuItemPrice(${cIdx}, ${iIdx}, this.value)">
+          <span style="font-weight:700;">₺</span>
+          <button onclick="removeMenuItem(${cIdx}, ${iIdx})" style="background:var(--danger-bg); color:var(--danger); border:1px solid var(--danger); border-radius:8px; padding:10px 14px; cursor:pointer; font-weight:700;">Sil</button>
         </div>
       `;
     });
+    html += `<button onclick="addMenuItem(${cIdx})" style="background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); border-radius:8px; padding:8px 14px; cursor:pointer; margin-top:10px; font-weight:600; font-size:12px;">+ Yeni Ürün Ekle</button>`;
   });
   root.innerHTML = html;
+}
+
+function updateMenuItemName(cIdx, iIdx, val) {
+  state.menu[cIdx].items[iIdx].name = val;
+  saveStateToCloud();
+}
+
+function updateMenuItemPrice(cIdx, iIdx, val) {
+  state.menu[cIdx].items[iIdx].price = parseFloat(val) || 0;
+  saveStateToCloud();
+}
+
+function addMenuItem(cIdx) {
+  const newId = 'item_' + Date.now();
+  state.menu[cIdx].items.push({ id: newId, name: "Yeni Ürün", price: 0 });
+  saveStateToCloud();
+}
+
+function removeMenuItem(cIdx, iIdx) {
+  state.menu[cIdx].items.splice(iIdx, 1);
+  saveStateToCloud();
 }
 
 /* ============ SYSTEM CONTROLS ============ */
@@ -788,25 +899,25 @@ function switchView(view) {
 }
 
 function handleLogin() {
-  const name = document.getElementById('login-name').value;
+  const nameEl = document.getElementById('login-name');
+  const name = nameEl ? nameEl.value.trim() : '';
   if(name) {
     state.currentUser = name;
     document.body.classList.add('logged-in');
     renderUI();
+  } else {
+    toast("Lütfen kullanıcı adınızı girin!");
   }
 }
 
 function handleLogout() {
-  document.body.classList.remove('logged-in');
   state.currentUser = null;
+  document.body.classList.remove('logged-in');
+  const nameEl = document.getElementById('login-name');
+  const passEl = document.getElementById('login-pass');
+  if(nameEl) nameEl.value = '';
+  if(passEl) passEl.value = '';
 }
-
-function tickClock(){
-  const el = document.getElementById('clock');
-  if(el) el.textContent = new Date().toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
-}
-setInterval(tickClock, 1000);
-tickClock();
 </script>
 </body>
 </html>
