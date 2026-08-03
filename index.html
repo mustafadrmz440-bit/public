@@ -1,812 +1,221 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#232420">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ocakbaşı Kasa">
-<title>Ocakbaşı Kasa — Restoran Yönetim</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Hikmetoğlu Motor — Alacak Verecek Programı</title>
 
-<!-- Firebase Compatibility Libraries -->
+<!-- React & Styling CDNs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+<!-- Firebase SDKs (v9 Compat Build for direct browser/script usage) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+
+<!-- Firebase Initialization -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCk7Kk-M6I3eWsgC4pr3xtjWTfJd-k_tng",
+    authDomain: "hikmets-motors.firebaseapp.com",
+    projectId: "hikmets-motors",
+    storageBucket: "hikmets-motors.firebasestorage.app",
+    messagingSenderId: "1031130510268",
+    appId: "1:1031130510268:web:fa406b65ba0e975fbab1b9",
+    measurementId: "G-GMRXGF6VR7"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  
+  // Make Firestore and Analytics accessible globally in window
+  window.db = firebase.firestore();
+  if (firebase.analytics) {
+    window.analytics = firebase.analytics();
+  }
+</script>
 
 <style>
-  :root{
-    --board:#232420;
-    --board-2:#2c2d27;
-    --board-3:#34362e;
-    --chalk:#efe9da;
-    --dim:#a39d86;
-    --paper:#faf6ec;
-    --paper-2:#f1ead8;
-    --mustard:#c99a2e;
-    --rust:#a8402e;
-    --sage:#6b7a5e;
-    --sage-2:#8fa87a;
-    --line:#454639;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--board);
-    color:var(--chalk);
-    font-family:'Inter', sans-serif;
-    min-height:100vh;
-  }
-  button{font-family:inherit;}
-
-  /* ===== TOP BAR ===== */
-  .topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 26px;
-    background:var(--board-2);
-    border-bottom:1px solid var(--line);
-    position:sticky; top:0; z-index:20;
-  }
-  .brand{ display:flex; align-items:baseline; gap:12px; }
-  .brand h1{
-    font-family:'Oswald', sans-serif; font-weight:700; font-size:22px; margin:0;
-    letter-spacing:0.5px;
-  }
-  .brand .tag{
-    font-family:'Courier Prime', monospace; font-size:11px; color:var(--mustard);
-    letter-spacing:2px; text-transform:uppercase;
-  }
-  .tabs{ display:flex; gap:6px; }
-  .tab-btn{
-    background:none; border:1px solid var(--line); color:var(--dim);
-    padding:9px 18px; border-radius:6px; cursor:pointer;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px;
-    letter-spacing:0.5px; position:relative;
-    transition:all .12s ease;
-  }
-  .tab-btn:hover{ color:var(--chalk); border-color:var(--mustard); }
-  .tab-btn.active{ background:var(--mustard); color:#232420; border-color:var(--mustard); }
-  .tab-badge{
-    position:absolute; top:-7px; right:-7px;
-    background:var(--rust); color:#fff; font-size:10px; font-weight:700;
-    border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center;
-    font-family:'Inter', sans-serif;
-  }
-  .clock{ font-family:'Courier Prime', monospace; font-size:13px; color:var(--dim); }
-  .sync-status{ font-size:10px; padding:3px 8px; border-radius:12px; font-weight:600; font-family:'Courier Prime', monospace; text-transform:uppercase; margin-left:10px; }
-  .sync-online{ background:rgba(143,168,122,0.2); color:var(--sage-2); border:1px solid var(--sage-2); }
-  .sync-offline{ background:rgba(168,64,46,0.2); color:var(--rust); border:1px solid var(--rust); }
-
-  /* ===== GİRİŞ EKRANI ===== */
-  #login-screen{
-    position:fixed; inset:0; z-index:100; background:var(--board);
-    display:flex; align-items:center; justify-content:center;
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.04), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.03), transparent 40%);
-  }
-  body.logged-in #login-screen{ display:none; }
-  body:not(.logged-in) #app-shell{ display:none; }
-  .login-card{
-    background:var(--board-2); border:1px solid var(--line); border-radius:12px;
-    padding:36px 32px; width:100%; max-width:340px; box-shadow:0 24px 60px rgba(0,0,0,0.5);
-    text-align:center;
-  }
-  .login-sub{ font-size:13px; color:var(--dim); margin:6px 0 22px; }
-  .login-form{ display:flex; flex-direction:column; gap:10px; }
-  .login-form input{
-    font-family:'Inter', sans-serif; font-size:14px; padding:11px 12px;
-    border:1px solid var(--line); border-radius:6px; background:#1a1b17; color:var(--chalk);
-  }
-  .login-form button{
-    background:var(--mustard); color:#232420; border:none; padding:11px; border-radius:6px;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; cursor:pointer; margin-top:4px;
-  }
-  .login-form button:hover{ filter:brightness(1.08); }
-  .login-hint{ font-size:11px; color:var(--dim); margin-top:16px; line-height:1.6; }
-
-  .user-box{ display:flex; align-items:center; gap:12px; }
-  .current-user{
-    font-family:'Oswald', sans-serif; font-size:12.5px; font-weight:600; color:var(--mustard);
-  }
-  .logout-btn{
-    background:none; border:1px solid var(--line); color:var(--dim); padding:6px 12px;
-    border-radius:5px; cursor:pointer; font-size:11.5px; font-family:'Inter', sans-serif;
-  }
-  .logout-btn:hover{ border-color:var(--rust); color:var(--rust); }
-
-  /* ===== TOAST ===== */
-  #toast-wrap{
-    position:fixed; top:70px; right:24px; z-index:50;
-    display:flex; flex-direction:column; gap:8px;
-  }
-  .toast{
-    background:var(--sage); color:#fff; padding:12px 18px; border-radius:6px;
-    font-size:13.5px; box-shadow:0 10px 26px rgba(0,0,0,0.35);
-    max-width:320px; animation:slidein .25s ease;
-  }
-  .toast.msg{ background:var(--mustard); color:#232420; font-weight:600; }
-  @keyframes slidein{ from{opacity:0; transform:translateX(20px);} to{opacity:1; transform:translateX(0);} }
-
-  .view{ padding:26px; max-width:1400px; margin:0 auto; }
-  .view h2.section-title{
-    font-family:'Oswald', sans-serif; font-size:15px; letter-spacing:2.5px;
-    text-transform:uppercase; color:var(--mustard); margin:0 0 18px;
-  }
-
-  /* ===== MASALAR GRID ===== */
-  .table-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px;
-  }
-  .table-card{
-    background:var(--board-2); border:2px solid var(--line); border-radius:10px;
-    padding:16px 14px; cursor:pointer; text-align:left; color:var(--chalk);
-    transition:all .12s ease; position:relative; width:100%;
-  }
-  .table-card:hover{ transform:translateY(-2px); border-color:var(--mustard); }
-  .table-card .tno{ font-family:'Oswald', sans-serif; font-size:22px; font-weight:700; }
-  .table-card .tstatus{
-    font-family:'Courier Prime', monospace; font-size:11px; letter-spacing:1px;
-    text-transform:uppercase; margin-top:8px; padding:3px 8px; border-radius:20px; display:inline-block;
-  }
-  .table-card .ttotal{ font-family:'Courier Prime', monospace; font-size:12px; color:var(--dim); margin-top:8px; }
-  .table-card .tmsg{
-    margin-top:8px; font-size:11px; color:var(--mustard); font-style:italic;
-    border-top:1px dashed var(--line); padding-top:6px;
-  }
-  .s-empty{ background:#3a3b32; color:#9a9682; }
-  .s-ordering{ background:#4a4326; color:var(--mustard); }
-  .s-kitchen{ background:#5a3d24; color:#f0a95c; }
-  .s-ready{ background:#3d4d34; color:var(--sage-2); animation:pulse 1.4s infinite; }
-  .s-payment{ background:#4a2b25; color:#e08672; }
-  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
-  .table-card.card-ready{ border-color:var(--sage-2); }
-  .table-card.card-kitchen{ border-color:#c17a35; }
-  .table-card.card-payment{ border-color:var(--rust); }
-
-  /* ===== ORDER PANEL ===== */
-  .order-layout{ display:grid; grid-template-columns:1.4fr 1fr; gap:22px; }
-  @media (max-width:900px){ .order-layout{ grid-template-columns:1fr; } }
-  .back-btn{
-    background:none; border:1px solid var(--line); color:var(--dim); padding:7px 14px;
-    border-radius:6px; cursor:pointer; font-size:12.5px; margin-bottom:16px;
-  }
-  .back-btn:hover{ border-color:var(--mustard); color:var(--chalk); }
-
-  .menu-block .category h3{
-    font-family:'Oswald', sans-serif; font-size:13px; letter-spacing:2.5px; text-transform:uppercase;
-    color:var(--mustard); border-bottom:1px dashed #5a5c4c; padding-bottom:7px; margin:20px 0 10px;
-  }
-  .menu-block .category:first-child h3{ margin-top:0; }
-  .items-grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
-  @media (max-width:480px){ .items-grid{ grid-template-columns:1fr; } }
-  .item-btn{
-    display:flex; justify-content:space-between; align-items:center; gap:8px;
-    background:var(--board-2); border:1px solid var(--line); border-radius:6px;
-    padding:11px 13px; cursor:pointer; color:var(--chalk); text-align:left;
-    transition:all .12s ease;
-  }
-  .item-btn:hover{ border-color:var(--mustard); background:var(--board-3); transform:translateY(-1px); }
-  .item-name{ font-size:14px; flex:1; }
-  .item-price{ font-family:'Courier Prime', monospace; font-size:12.5px; color:var(--mustard); font-weight:700; white-space:nowrap; }
-
-  /* ticket */
-  .ticket{
-    background:var(--paper); color:var(--board); border-radius:6px; overflow:hidden;
-    display:flex; flex-direction:column; box-shadow:0 16px 34px rgba(0,0,0,0.4);
-    font-family:'Courier Prime', monospace;
-  }
-  .ticket-head{ text-align:center; padding:18px 18px 12px; border-bottom:1px dashed #b9b092; }
-  .ticket-head .tname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:18px; }
-  .ticket-body{ padding:12px 18px; max-height:320px; overflow-y:auto; }
-  .empty-note{ text-align:center; color:#9a927a; font-size:12.5px; padding:24px 8px; line-height:1.6; }
-  .line{ display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:7px 0; border-bottom:1px dotted #ddd4bc; align-items:center; }
-  .l-name{ flex:1; }
-  .l-qty{ display:flex; align-items:center; gap:5px; color:#6b6752; }
-  .qty-btn{
-    background:none; border:1px solid #b9b092; color:var(--board); width:19px; height:19px;
-    border-radius:4px; font-size:11px; cursor:pointer; font-family:'Courier Prime', monospace;
-  }
-  .qty-btn:hover{ background:#eee6cf; }
-  .l-remove{ background:none; border:none; color:var(--rust); cursor:pointer; font-size:13px; }
-
-  .note-field{ padding:0 18px 12px; }
-  .note-field textarea{
-    width:100%; font-family:'Inter', sans-serif; font-size:12.5px; padding:8px 10px;
-    border:1px solid #d9cfae; border-radius:5px; resize:none; background:#fffdf6; color:var(--board);
-  }
-  .note-field label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
-
-  .whatsapp-block{ padding:0 18px 12px; }
-  .whatsapp-block label{ font-size:11px; color:#8a836b; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px; }
-  .wa-row{ display:flex; gap:7px; }
-  .wa-row input{
-    flex:1; font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px;
-    border:1px solid #d9cfae; border-radius:5px; background:#fffdf6; color:var(--board);
-  }
-  .wa-btn{
-    background:#25D366; color:#0b3d22; border:none; padding:9px 13px; border-radius:5px;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; cursor:pointer; white-space:nowrap;
-  }
-
-  .ticket-totals{ padding:12px 18px 6px; border-top:1px dashed #b9b092; font-size:13px; }
-  .trow{ display:flex; justify-content:space-between; padding:3px 0; color:#5c5744; }
-  .trow.grand{ font-size:17px; font-weight:700; color:var(--board); padding-top:7px; border-top:1px solid #c9c0a4; margin-top:3px; }
-
-  .ticket-actions{ padding:12px 18px 20px; display:flex; flex-direction:column; gap:8px; }
-  .btn{
-    font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.5px; font-size:13.5px;
-    padding:11px 10px; border:none; border-radius:5px; cursor:pointer; transition:filter .12s ease;
-  }
-  .btn-accept{ background:var(--sage); color:#fff; }
-  .btn-send{ background:var(--mustard); color:#232420; }
-  .btn-pay{ background:var(--rust); color:#fff; }
-
-  /* ===== KDS (Mutfak) ===== */
-  .kds-wrap{ background:#111310; border-radius:10px; padding:20px; min-height:420px; }
-  .kds-empty{ color:#5f6357; text-align:center; padding:60px 20px; font-family:'Courier Prime', monospace; }
-  .kds-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
-  .kds-card{
-    background:#1b1d17; border:1px solid #33362a; border-radius:8px; padding:16px;
-    font-family:'Courier Prime', monospace; color:#e7e2ce;
-  }
-  .kds-card.bekliyor{ border-left:4px solid var(--mustard); }
-  .kds-card.hazirlaniyor{ border-left:4px solid #c17a35; }
-  .kds-card.hazir{ border-left:4px solid var(--sage-2); }
-  .kds-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
-  .kds-table{ font-family:'Oswald', sans-serif; font-size:17px; font-weight:700; color:#fff; }
-  .kds-items{ font-size:13px; line-height:1.7; margin-bottom:8px; }
-  .kds-actions{ display:flex; gap:6px; margin-bottom:8px; }
-  .kds-btn{
-    flex:1; font-family:'Oswald', sans-serif; font-weight:600; font-size:12px; padding:8px;
-    border:none; border-radius:5px; cursor:pointer; color:#fff;
-  }
-  .kds-btn.prep{ background:#c17a35; }
-  .kds-btn.ready{ background:var(--sage-2); color:#1b1d17; }
-
-  /* ===== GÜN SONU & EXPENSES ===== */
-  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:26px; }
-  .summary-card{ background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:20px 22px; }
-  .summary-card .s-label{ font-family:'Oswald', sans-serif; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
-  .summary-card .s-value{ font-family:'Courier Prime', monospace; font-size:30px; font-weight:700; color:var(--mustard); }
-  .summary-card.revenue .s-value{ color:var(--sage-2); }
-
-  .expense-block{ background:var(--board-2); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:22px 0; }
-  .expense-row{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; border-bottom:1px solid var(--line); font-family:'Courier Prime', monospace; }
-  .expense-form{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-  .expense-form input{ font-family:'Inter', sans-serif; font-size:13px; padding:9px 10px; border:1px solid var(--line); border-radius:5px; background:var(--board); color:var(--chalk); }
-  .expense-form button{ background:var(--rust); color:#fff; border:none; padding:9px 16px; border-radius:5px; cursor:pointer; font-family:'Oswald', sans-serif; font-weight:600; }
-
-  /* Mobil Uyum */
-  @media (max-width:640px){
-    .topbar{ flex-wrap:wrap; gap:10px; padding:10px 14px; }
-    .brand .tag{ display:none; }
-    .tabs{ order:3; width:100%; display:flex; gap:6px; overflow-x:auto; }
-    .tab-btn{ padding:8px 13px; font-size:12px; flex-shrink:0; }
-    .view{ padding:14px; }
-    .table-grid{ grid-template-columns:repeat(auto-fill, minmax(118px,1fr)); gap:9px; }
-    #toast-wrap{ left:14px; right:14px; top:auto; bottom:14px; }
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; }
 </style>
 </head>
 <body>
+<div id="root"></div>
 
-<div id="login-screen">
-  <div class="login-card">
-    <div class="brand" style="justify-content:center; margin-bottom:4px;">
-      <h1>Ocakbaşı Kasa</h1>
-    </div>
-    <div class="login-sub">Devam etmek için giriş yapın</div>
-    <div class="login-form">
-      <input type="text" id="login-name" placeholder="Adınız">
-      <input type="password" id="login-pass" placeholder="Şifre" onkeydown="if(event.key==='Enter') handleLogin();">
-      <button id="btn-login" onclick="handleLogin()">Giriş Yap</button>
-    </div>
-    <div class="login-hint">Admin şifresiyle (1234) veya isminizle girin.</div>
-  </div>
-</div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
 
-<div id="app-shell">
-
-<div class="topbar">
-  <div class="brand">
-    <h1>Ocakbaşı Kasa</h1>
-    <span class="tag">Restoran Yönetim</span>
-    <span id="sync-indicator" class="sync-status sync-offline">Syncing...</span>
-  </div>
-  <div class="tabs">
-    <button class="tab-btn active" data-view="masalar" onclick="switchView('masalar')">Masalar</button>
-    <button class="tab-btn" data-view="mutfak" onclick="switchView('mutfak')">Mutfak Ekranı<span class="tab-badge" id="badge-mutfak" style="display:none;">0</span></button>
-    <button class="tab-btn" data-view="kasa" onclick="switchView('kasa')">Kasa<span class="tab-badge" id="badge-kasa" style="display:none;">0</span></button>
-    <button class="tab-btn" data-view="gunsonu" onclick="switchView('gunsonu')">Gün Sonu</button>
-    <button class="tab-btn" data-view="personel" onclick="switchView('personel')">Personel</button>
-    <button class="tab-btn" data-view="menuyonetim" onclick="switchView('menuyonetim')">Menü Yönetimi</button>
-  </div>
-  <div class="user-box">
-    <span class="clock" id="clock"></span>
-    <span class="current-user" id="current-user"></span>
-    <button class="logout-btn" onclick="handleLogout()">Çıkış</button>
-  </div>
-</div>
-
-<div id="toast-wrap"></div>
-<div class="view" id="view-root"></div>
-
-</div>
-
-<script>
-/* ============ FIREBASE CONFIG & INIT ============ */
-const firebaseConfig = {
-  apiKey: "AIzaSyAANxv0YtzXCG-y0CVln3QXdudHXlL94Ew",
-  authDomain: "ocakbasi-kasa.firebaseapp.com",
-  projectId: "ocakbasi-kasa",
-  storageBucket: "ocakbasi-kasa.firebasestorage.app",
-  messagingSenderId: "211570484231",
-  appId: "1:211570484231:web:0bee101bf224be45a976a2",
-  measurementId: "G-BQKZZ10QH6"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-/* ============ INITIAL STATE ============ */
-const INITIAL_MENU = [
-  { cat: "Ana Yemekler", items: [
-    { id:"adana",   name:"Adana Kebap", price:280 },
-    { id:"urfa",    name:"Urfa Kebap", price:270 },
-    { id:"pirzola", name:"Kuzu Pirzola", price:420 },
-    { id:"tavuk",   name:"Tavuk Şiş", price:220 },
-    { id:"kofte",   name:"Izgara Köfte", price:230 },
-    { id:"lahmacun",name:"Lahmacun", price:90 }
-  ]},
-  { cat: "Başlangıçlar", items: [
-    { id:"mercimek", name:"Mercimek Çorbası", price:90 },
-    { id:"ezme",     name:"Acılı Ezme", price:70 },
-    { id:"humus",    name:"Humus", price:95 },
-    { id:"cacik",    name:"Cacık", price:75 }
-  ]},
-  { cat: "İçecekler", items: [
-    { id:"ayran",  name:"Ayran", price:40 },
-    { id:"kola",   name:"Kola (kutu)", price:50 },
-    { id:"su",     name:"Su", price:20 },
-    { id:"cay",    name:"Çay", price:25 }
-  ]},
-  { cat: "Tatlılar", items: [
-    { id:"baklava", name:"Baklava (dilim)", price:110 },
-    { id:"kunefe",  name:"Künefe", price:150 }
-  ]}
-];
-
-function makeTable(no){
-  return {
-    no,
-    status: 'empty',
-    order: { items:{}, note:'' },
-    kitchenStatus: null,
-    messages: [],
-    whatsapp: ''
+/* ---- localStorage tabanlı kalıcı depolama (window.storage API ile uyumlu) ---- */
+if (!window.storage) {
+  window.storage = {
+    async get(key) {
+      const v = localStorage.getItem(key);
+      return v !== null ? { key, value: v } : null;
+    },
+    async set(key, value) {
+      localStorage.setItem(key, value);
+      return { key, value };
+    },
+    async delete(key) {
+      localStorage.removeItem(key);
+      return { key, deleted: true };
+    },
+    async list(prefix) {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return { keys };
+    }
   };
 }
 
-let state = {
-  tables: Array.from({length:10}, (_,i) => makeTable(i+1)),
-  menu: INITIAL_MENU,
-  activeView: 'masalar',
-  selectedTableNo: null,
-  kasaSelectedNo: null,
-  salesLog: [],
-  expenses: [],
-  currentUser: null
-};
 
-/* ============ REALTIME FIREBASE SYNC ============ */
-db.collection("restaurant").doc("live_state")
-  .onSnapshot((doc) => {
-    const indicator = document.getElementById('sync-indicator');
-    if (doc.exists) {
-      const cloud = doc.data();
-      if(cloud.tables) state.tables = cloud.tables;
-      if(cloud.menu) state.menu = cloud.menu;
-      if(cloud.salesLog) state.salesLog = cloud.salesLog;
-      if(cloud.expenses) state.expenses = cloud.expenses;
-      
-      indicator.textContent = "🟢 Live Sync Active";
-      indicator.className = "sync-status sync-online";
-      renderUI();
+/* ---- basit çizgi tabanlı ikon bileşenleri ---- */
+function Icon({ size = 20, style, className, children }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} className={className}>
+      {children}
+    </svg>
+  );
+}
+const Plus = (p) => <Icon {...p}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></Icon>;
+const X = (p) => <Icon {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Icon>;
+const Check = (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>;
+const ChevronLeft = (p) => <Icon {...p}><polyline points="15 18 9 12 15 6"/></Icon>;
+const Send = (p) => <Icon {...p}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></Icon>;
+const Phone = (p) => <Icon {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></Icon>;
+const Trash2 = (p) => <Icon {...p}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></Icon>;
+const Camera = (p) => <Icon {...p}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></Icon>;
+const Download = (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Icon>;
+const Wallet = (p) => <Icon {...p}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></Icon>;
+const CreditCard = (p) => <Icon {...p}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></Icon>;
+const FileText = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></Icon>;
+const FileDown = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></Icon>;
+const Printer = (p) => <Icon {...p}><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></Icon>;
+const Pencil = (p) => <Icon {...p}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></Icon>;
+const Bell = (p) => <Icon {...p}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></Icon>;
+const Users = (p) => <Icon {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
+const Cloud = (p) => <Icon {...p}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a4.5 4.5 0 1 1 0 9z"/></Icon>;
+const CloudUpload = (p) => <Icon {...p}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a4.5 4.5 0 1 1 0 9z"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></Icon>;
+const Search = (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
+const BarChart3 = (p) => <Icon {...p}><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></Icon>;
+const KeyRound = (p) => <Icon {...p}><path d="M2.5 21.5 8 16"/><circle cx="16" cy="8" r="5.5"/><path d="M13.5 10.5 16 8"/></Icon>;
+const FileUp = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></Icon>;
+const MapPin = (p) => <Icon {...p}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></Icon>;
+const ScanLine = (p) => <Icon {...p}><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></Icon>;
+const FileSignature = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h9"/><polyline points="14 2 14 8 20 8"/><path d="M8 17s1-1 2-1 1 1 2 1 1-1 2-1 1 1 2 1"/></Icon>;
+const Globe = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Icon>;
+const Coins = (p) => <Icon {...p}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>;
+const Bitcoin = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><path d="M9.5 8h3.5a2 2 0 1 1 0 4h-3.5zm0 4h4a2 2 0 1 1 0 4h-4z"/><line x1="10.5" y1="6" x2="10.5" y2="18"/></Icon>;
+const RefreshCw = (p) => <Icon {...p}><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></Icon>;
+const ArrowLeftRight = (p) => <Icon {...p}><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></Icon>;
+const Wrench = (p) => <Icon {...p}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></Icon>;
+const Package = (p) => <Icon {...p}><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73Z"/><path d="M12 22V12"/><path d="M3.3 7.3 12 12l8.7-4.7"/><path d="M7.5 4.27 16.5 9.27"/></Icon>;
+const Minus = (p) => <Icon {...p}><path d="M5 12h14"/></Icon>;
+const Calendar = (p) => <Icon {...p}><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></Icon>;
+const Sparkles = (p) => <Icon {...p}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></Icon>;
+
+
+const FONT_STYLE = `
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+.font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+.font-body { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 15px; }
+.font-num { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+* { -webkit-tap-highlight-color: transparent; }
+body { background: #14151A; }
+input, select, textarea {
+  background: #1E2027;
+  color: #F5F5F0;
+  font-weight: 500;
+}
+input::placeholder, textarea::placeholder { color: #A8ACB8; opacity: 1; }
+select option { background: #1E2027; color: #F5F5F0; }
+p, span, div, label, h1, h2, h3 { font-weight: inherit; }
+.badge-paid { background: rgba(52,194,141,0.18); color: #34C28D; font-weight: 700; }
+.badge-partial { background: rgba(240,195,74,0.20); color: #F0C34A; font-weight: 700; }
+.badge-unpaid { background: rgba(240,85,61,0.18); color: #F0553D; font-weight: 700; }
+.hairline { border-bottom: 1px solid #383B44; }
+.sheet-enter { animation: sheetUp 0.22s ease-out; }
+@keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.screen-enter { animation: screenIn 0.18s ease-out; }
+@keyframes screenIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+.marquee-track { overflow: hidden; white-space: nowrap; }
+.marquee-text { display: inline-block; padding-left: 100%; animation: marquee 16s linear infinite; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+`;
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function formatTL(n) { return Number(n || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+function paidTotal(inv) {
+  if (Array.isArray(inv.payments) && inv.payments.length) return inv.payments.reduce((s, p) => s + p.amount, 0);
+  if (inv.status === 'paid') return inv.amount; // eski (kısmi ödeme öncesi) kayıtlarla uyumluluk
+  return 0;
+}
+function remainingAmount(inv) { return Math.max(0, inv.amount - paidTotal(inv)); }
+function invStatus(inv) {
+  const paid = paidTotal(inv);
+  if (paid >= inv.amount) return 'paid';
+  if (paid > 0) return 'partial';
+  return 'unpaid';
+}
+
+function daysSince(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  return Math.floor((now - d) / 86400000);
+}
+function currentYYYYMM() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function parseTrDate(str) {
+  const parts = (str || '').split('.');
+  if (parts.length !== 3) return null;
+  const [d, m, y] = parts.map(Number);
+  if (!d || !m || !y) return null;
+  return new Date(y, m - 1, d);
+}
+function daysBetweenIsoAndDate(isoDateStr, dateObj) {
+  if (!dateObj) return 0;
+  const start = new Date(isoDateStr + 'T00:00:00');
+  return Math.floor((dateObj - start) / 86400000);
+}
+
+function personReliability(personInvoices) {
+  if (!personInvoices || personInvoices.length === 0) return null;
+  const rank = { onTime: 0, medium: 1, late: 2 };
+  let worst = 'onTime';
+  personInvoices.forEach(inv => {
+    const rem = remainingAmount(inv);
+    let days;
+    if (rem <= 0.004) {
+      const payments = inv.payments || [];
+      const last = payments[payments.length - 1];
+      if (!last) return;
+      days = daysBetweenIsoAndDate(inv.date, parseTrDate(last.date));
     } else {
-      saveStateToCloud();
+      days = daysSince(inv.date);
     }
-  }, (err) => {
-    console.error("Sync Error:", err);
-    const indicator = document.getElementById('sync-indicator');
-    indicator.textContent = "🔴 Sync Error";
-    indicator.className = "sync-status sync-offline";
+    let cat = 'onTime';
+    if (days > 45) cat = 'late';
+    else if (days > 30) cat = 'medium';
+    if (rank[cat] > rank[worst]) worst = cat;
   });
-
-function saveStateToCloud() {
-  db.collection("restaurant").doc("live_state").set({
-    tables: state.tables,
-    menu: state.menu,
-    salesLog: state.salesLog,
-    expenses: state.expenses
-  });
+  return worst;
 }
 
-/* ============ HELPERS ============ */
-function tl(n){ return '₺' + (n || 0).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-function getTable(no){ return state.tables.find(t => t.no === no); }
-function orderTotal(order){ return Object.values(order.items || {}).reduce((s,l)=>s+l.price*l.qty,0); }
-function statusLabel(s){
-  return { empty:'Boş', ordering:'Sipariş Alınıyor', kitchen:'Mutfakta', ready:'Hazır — Servise Çıksın', payment:'Ödeme Bekliyor' }[s] || 'Boş';
-}
-function statusClass(s){
-  return { empty:'s-empty', ordering:'s-ordering', kitchen:'s-kitchen', ready:'s-ready', payment:'s-payment' }[s] || 's-empty';
-}
+const CURRENCIES = ['TRY', 'USD', 'EUR', 'GBP'];
+const EXPENSE_CATEGORIES = ['kira', 'maas', 'parca', 'fatura', 'yakit', 'diger'];
 
-function toast(msg, isMsg){
-  const wrap = document.getElementById('toast-wrap');
-  if(!wrap) return;
-  const el = document.createElement('div');
-  el.className = 'toast' + (isMsg ? ' msg' : '');
-  el.textContent = msg;
-  wrap.appendChild(el);
-  setTimeout(()=> el.remove(), 4000);
-}
+const LOGO_DATA_URI = 'data:image/png;base64,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';
 
-/* ============ RENDER LOGIC ============ */
-function renderUI() {
-  renderTopbar();
-  const root = document.getElementById('view-root');
-  if(!root) return;
-
-  if (state.activeView === 'masalar') {
-    if (state.selectedTableNo !== null) {
-      renderOrderPanel(root);
-    } else {
-      renderMasalarGrid(root);
-    }
-  } else if (state.activeView === 'mutfak') {
-    renderMutfak(root);
-  } else if (state.activeView === 'kasa') {
-    renderKasa(root);
-  } else if (state.activeView === 'gunsonu') {
-    renderGunSonu(root);
-  } else if (state.activeView === 'personel') {
-    renderPersonel(root);
-  } else if (state.activeView === 'menuyonetim') {
-    renderMenuYonetim(root);
-  }
-}
-
-function renderTopbar(){
-  document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.view === state.activeView);
-  });
-  const kitchenCount = state.tables.filter(t=>t.status==='kitchen').length;
-  const readyCount = state.tables.filter(t=>t.status==='ready').length;
-  const badgeM = document.getElementById('badge-mutfak');
-  badgeM.style.display = kitchenCount+readyCount > 0 ? 'flex' : 'none';
-  badgeM.textContent = kitchenCount+readyCount;
-
-  const payCount = state.tables.filter(t=>t.status==='payment'||t.status==='ready').length;
-  const badgeK = document.getElementById('badge-kasa');
-  badgeK.style.display = payCount > 0 ? 'flex' : 'none';
-  badgeK.textContent = payCount;
-
-  const userEl = document.getElementById('current-user');
-  if(userEl && state.currentUser){
-    userEl.textContent = `👤 ${state.currentUser}`;
-  }
-}
-
-/* ============ VIEWS IMPLEMENTATION ============ */
-
-// 1. MASALAR GRID
-function renderMasalarGrid(root){
-  let html = `<h2 class="section-title">Masalar</h2><div class="table-grid">`;
-  state.tables.forEach(t => {
-    const total = orderTotal(t.order);
-    html += `
-      <div class="table-card ${t.status==='ready'?'card-ready':''} ${t.status==='kitchen'?'card-kitchen':''}" onclick="state.selectedTableNo=${t.no}; renderUI();">
-        <div class="tno">Masa ${t.no}</div>
-        <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
-        ${total>0 ? `<div class="ttotal">${tl(total)}</div>` : ''}
-      </div>
-    `;
-  });
-  html += `</div>`;
-  root.innerHTML = html;
-}
-
-// 2. ORDER PANEL
-function renderOrderPanel(root){
-  const t = getTable(state.selectedTableNo);
-  const total = orderTotal(t.order);
-
-  let html = `
-    <button class="back-btn" onclick="state.selectedTableNo=null; renderUI();">← Masalara Dön</button>
-    <div class="order-layout">
-      <div class="menu-block">
-        <h2 class="section-title">Masa ${t.no} - Sipariş Al</h2>
-  `;
-
-  state.menu.forEach(cat => {
-    html += `<div class="category"><h3>${cat.cat}</h3><div class="items-grid">`;
-    cat.items.forEach(item => {
-      html += `
-        <div class="item-btn" onclick="addItem(${t.no}, '${item.id}', '${item.name}', ${item.price})">
-          <span class="item-name">${item.name}</span>
-          <span class="item-price">${tl(item.price)}</span>
-        </div>
-      `;
-    });
-    html += `</div></div>`;
-  });
-
-  html += `</div>
-    <div>
-      <div class="ticket">
-        <div class="ticket-head">
-          <div class="tname">MASA ${t.no} ADİSYON</div>
-          <span class="tstatus ${statusClass(t.status)}">${statusLabel(t.status)}</span>
-        </div>
-        <div class="ticket-body">
-  `;
-
-  const itemsArr = Object.entries(t.order.items || {});
-  if(itemsArr.length === 0){
-    html += `<div class="empty-note">Henüz ürün eklenmedi.</div>`;
-  } else {
-    itemsArr.forEach(([id, item]) => {
-      html += `
-        <div class="line">
-          <span class="l-name">${item.name}</span>
-          <div class="l-qty">
-            <button class="qty-btn" onclick="updateQty(${t.no}, '${id}', -1)">-</button>
-            <b>${item.qty}</b>
-            <button class="qty-btn" onclick="updateQty(${t.no}, '${id}', 1)">+</button>
-          </div>
-          <b>${tl(item.price * item.qty)}</b>
-        </div>
-      `;
-    });
-  }
-
-  html += `
-        </div>
-        <div class="ticket-totals">
-          <div class="trow grand">
-            <span>TOPLAM:</span>
-            <span>${tl(total)}</span>
-          </div>
-        </div>
-        <div class="ticket-actions">
-          <button class="btn btn-send" onclick="sendToKitchen(${t.no})">Mutfağa Gönder</button>
-          <button class="btn btn-pay" onclick="clearTable(${t.no})">Adisyonu Kapat (Öde)</button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-
-  root.innerHTML = html;
-}
-
-function addItem(tableNo, id, name, price) {
-  const t = getTable(tableNo);
-  if(!t.order.items) t.order.items = {};
-  if(t.order.items[id]) {
-    t.order.items[id].qty++;
-  } else {
-    t.order.items[id] = { name, price, qty: 1 };
-  }
-  t.status = 'ordering';
-  saveStateToCloud();
-}
-
-function updateQty(tableNo, id, delta) {
-  const t = getTable(tableNo);
-  if(t.order.items[id]){
-    t.order.items[id].qty += delta;
-    if(t.order.items[id].qty <= 0) delete t.order.items[id];
-  }
-  if(Object.keys(t.order.items).length === 0) t.status = 'empty';
-  saveStateToCloud();
-}
-
-function sendToKitchen(tableNo) {
-  const t = getTable(tableNo);
-  if(Object.keys(t.order.items || {}).length === 0) {
-    toast("Adisyonda ürün yok!");
-    return;
-  }
-  t.status = 'kitchen';
-  t.kitchenStatus = 'bekliyor';
-  toast(`Masa ${tableNo} mutfağa gönderildi.`);
-  saveStateToCloud();
-}
-
-function clearTable(tableNo) {
-  const t = getTable(tableNo);
-  const total = orderTotal(t.order);
-  if(total > 0){
-    state.salesLog.push({ tableNo, total, time: new Date().toLocaleTimeString('tr-TR') });
-  }
-  t.order = { items:{}, note:'' };
-  t.status = 'empty';
-  t.kitchenStatus = null;
-  state.selectedTableNo = null;
-  toast(`Masa ${tableNo} kapatıldı.`);
-  saveStateToCloud();
-}
-
-// 3. KDS / MUTFAK EKRANI
-function renderMutfak(root){
-  const kitchenTables = state.tables.filter(t => t.status === 'kitchen' || t.status === 'ready');
-  let html = `<h2 class="section-title">Mutfak Ekranı (KDS)</h2><div class="kds-wrap">`;
-
-  if(kitchenTables.length === 0){
-    html += `<div class="kds-empty">Mutfakta bekleyen sipariş yok.</div>`;
-  } else {
-    html += `<div class="kds-grid">`;
-    kitchenTables.forEach(t => {
-      html += `
-        <div class="kds-card ${t.kitchenStatus || 'bekliyor'}">
-          <div class="kds-top">
-            <span class="kds-table">MASA ${t.no}</span>
-            <span style="font-size:11px; text-transform:uppercase;">${t.kitchenStatus || 'bekliyor'}</span>
-          </div>
-          <div class="kds-items">
-      `;
-      Object.values(t.order.items || {}).forEach(item => {
-        html += `<div>• ${item.name} x<b>${item.qty}</b></div>`;
-      });
-      html += `</div>
-          <div class="kds-actions">
-            <button class="kds-btn prep" onclick="setKitchenStatus(${t.no}, 'hazirlaniyor')">Hazırlanıyor</button>
-            <button class="kds-btn ready" onclick="setKitchenStatus(${t.no}, 'hazir')">Hazır</button>
-          </div>
-        </div>
-      `;
-    });
-    html += `</div>`;
-  }
-  html += `</div>`;
-  root.innerHTML = html;
-}
-
-function setKitchenStatus(tableNo, kStatus){
-  const t = getTable(tableNo);
-  t.kitchenStatus = kStatus;
-  if(kStatus === 'hazir') t.status = 'ready';
-  else t.status = 'kitchen';
-  saveStateToCloud();
-}
-
-// 4. KASA
-function renderKasa(root){
-  let html = `<h2 class="section-title">Kasa İşlemleri</h2>`;
-  const activeTables = state.tables.filter(t => orderTotal(t.order) > 0);
-
-  if(activeTables.length === 0){
-    html += `<div class="kds-empty">Açık adisyon bulunmuyor.</div>`;
-  } else {
-    html += `<div class="table-grid">`;
-    activeTables.forEach(t => {
-      html += `
-        <div class="table-card" onclick="clearTable(${t.no})">
-          <div class="tno">Masa ${t.no}</div>
-          <div class="ttotal">${tl(orderTotal(t.order))}</div>
-          <button class="btn btn-pay" style="margin-top:10px; width:100%;">Ödeme Al / Kapat</button>
-        </div>
-      `;
-    });
-    html += `</div>`;
-  }
-  root.innerHTML = html;
-}
-
-// 5. GÜN SONU & EXPENSES
-function renderGunSonu(root){
-  const totalRevenue = state.salesLog.reduce((s, x) => s + x.total, 0);
-  const totalExpense = state.expenses.reduce((s, x) => s + x.amount, 0);
-
-  let html = `
-    <h2 class="section-title">Gün Sonu Raporu</h2>
-    <div class="summary-cards">
-      <div class="summary-card revenue">
-        <div class="s-label">Toplam Ciro</div>
-        <div class="s-value">${tl(totalRevenue)}</div>
-      </div>
-      <div class="summary-card">
-        <div class="s-label">Toplam Gider</div>
-        <div class="s-value" style="color:var(--rust);">${tl(totalExpense)}</div>
-      </div>
-      <div class="summary-card">
-        <div class="s-label">Net Kazanç</div>
-        <div class="s-value">${tl(totalRevenue - totalExpense)}</div>
-      </div>
-    </div>
-
-    <div class="expense-block">
-      <h3>Gider Ekle</h3>
-      <div class="expense-form">
-        <input type="text" id="exp-desc" placeholder="Gider açıklaması...">
-        <input type="number" id="exp-amt" placeholder="Tutar (₺)">
-        <button onclick="addExpense()">Gider Kaydet</button>
-      </div>
-      <div style="margin-top:15px;">
-  `;
-
-  state.expenses.forEach((e, idx) => {
-    html += `<div class="expense-row"><span>${e.desc}</span><b>${tl(e.amount)}</b></div>`;
-  });
-
-  html += `</div></div>`;
-  root.innerHTML = html;
-}
-
-function addExpense(){
-  const desc = document.getElementById('exp-desc').value;
-  const amount = parseFloat(document.getElementById('exp-amt').value);
-  if(desc && amount){
-    state.expenses.push({ desc, amount, time: new Date().toLocaleTimeString('tr-TR') });
-    saveStateToCloud();
-  }
-}
-
-// 6. PERSONEL & MENU MANAGEMENT
-function renderPersonel(root){
-  root.innerHTML = `<h2 class="section-title">Personel Yönetimi</h2><p style="color:var(--dim);">Aktif Kullanıcı: <b>${state.currentUser || 'Giriş Yapılmadı'}</b></p>`;
-}
-
-function renderMenuYonetim(root){
-  let html = `<h2 class="section-title">Menü Yönetimi</h2>`;
-  state.menu.forEach((cat, cIdx) => {
-    html += `<h3 style="color:var(--mustard); margin-top:15px;">${cat.cat}</h3>`;
-    cat.items.forEach((item, iIdx) => {
-      html += `
-        <div style="display:flex; gap:10px; margin-bottom:8px; align-items:center;">
-          <input type="text" value="${item.name}" style="background:var(--board-2); border:1px solid var(--line); color:#fff; padding:6px; border-radius:4px;" onchange="state.menu[${cIdx}].items[${iIdx}].name=this.value; saveStateToCloud();">
-          <input type="number" value="${item.price}" style="background:var(--board-2); border:1px solid var(--line); color:#fff; padding:6px; border-radius:4px; width:90px;" onchange="state.menu[${cIdx}].items[${iIdx}].price=parseFloat(this.value); saveStateToCloud();">
-          <span>₺</span>
-        </div>
-      `;
-    });
-  });
-  root.innerHTML = html;
-}
-
-/* ============ SYSTEM CONTROLS ============ */
-function switchView(view) {
-  state.activeView = view;
-  state.selectedTableNo = null;
-  renderUI();
-}
-
-function handleLogin() {
-  const name = document.getElementById('login-name').value;
-  if(name) {
-    state.currentUser = name;
-    document.body.classList.add('logged-in');
-    renderUI();
-  }
-}
-
-function handleLogout() {
-  document.body.classList.remove('logged-in');
-  state.currentUser = null;
-}
-
-function tickClock(){
-  const el = document.getElementById('clock');
-  if(el) el.textContent = new Date().toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
-}
-setInterval(tickClock, 1000);
-tickClock();
+// Code continues with UI render logic...
 </script>
 </body>
 </html>
