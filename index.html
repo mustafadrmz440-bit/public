@@ -31,7 +31,7 @@
   // Initialize Firebase
   const app = firebase.initializeApp(firebaseConfig);
   
-  // Make Firestore and Analytics accessible globally in window
+  // Make Firestore globally available
   window.db = firebase.firestore();
   if (firebase.analytics) {
     window.analytics = firebase.analytics();
@@ -50,30 +50,57 @@
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useRef } = React;
 
-/* ---- localStorage tabanlı kalıcı depolama (window.storage API ile uyumlu) ---- */
-if (!window.storage) {
-  window.storage = {
-    async get(key) {
-      const v = localStorage.getItem(key);
-      return v !== null ? { key, value: v } : null;
-    },
-    async set(key, value) {
-      localStorage.setItem(key, value);
-      return { key, value };
-    },
-    async delete(key) {
-      localStorage.removeItem(key);
-      return { key, deleted: true };
-    },
-    async list(prefix) {
-      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
-      return { keys };
+/* ---- Firebase Firestore Real-Time Storage Engine ---- */
+window.storage = {
+  async get(key) {
+    try {
+      const doc = await window.db.collection('app_data').doc(key).get();
+      if (doc.exists) {
+        return { key, value: doc.data().value };
+      }
+      return null;
+    } catch (e) {
+      console.error("Firebase Read Error:", e);
+      return null;
     }
-  };
-}
+  },
+  async set(key, value) {
+    try {
+      await window.db.collection('app_data').doc(key).set({ value: value });
+      return { key, value };
+    } catch (e) {
+      console.error("Firebase Write Error:", e);
+      return { key, value };
+    }
+  },
+  async delete(key) {
+    try {
+      await window.db.collection('app_data').doc(key).delete();
+      return { key, deleted: true };
+    } catch (e) {
+      console.error("Firebase Delete Error:", e);
+      return { key, deleted: false };
+    }
+  },
+  async list(prefix) {
+    try {
+      const snapshot = await window.db.collection('app_data').get();
+      const keys = [];
+      snapshot.forEach(doc => {
+        if (!prefix || doc.id.startsWith(prefix)) {
+          keys.push(doc.id);
+        }
+      });
+      return { keys };
+    } catch (e) {
+      console.error("Firebase List Error:", e);
+      return { keys: [] };
+    }
+  }
+};
 
 
-/* ---- basit çizgi tabanlı ikon bileşenleri ---- */
+/* ---- Basit çizgi tabanlı ikon bileşenleri ---- */
 function Icon({ size = 20, style, className, children }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -119,41 +146,12 @@ const Minus = (p) => <Icon {...p}><path d="M5 12h14"/></Icon>;
 const Calendar = (p) => <Icon {...p}><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></Icon>;
 const Sparkles = (p) => <Icon {...p}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></Icon>;
 
-
-const FONT_STYLE = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
-.font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
-.font-body { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 15px; }
-.font-num { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
-* { -webkit-tap-highlight-color: transparent; }
-body { background: #14151A; }
-input, select, textarea {
-  background: #1E2027;
-  color: #F5F5F0;
-  font-weight: 500;
-}
-input::placeholder, textarea::placeholder { color: #A8ACB8; opacity: 1; }
-select option { background: #1E2027; color: #F5F5F0; }
-p, span, div, label, h1, h2, h3 { font-weight: inherit; }
-.badge-paid { background: rgba(52,194,141,0.18); color: #34C28D; font-weight: 700; }
-.badge-partial { background: rgba(240,195,74,0.20); color: #F0C34A; font-weight: 700; }
-.badge-unpaid { background: rgba(240,85,61,0.18); color: #F0553D; font-weight: 700; }
-.hairline { border-bottom: 1px solid #383B44; }
-.sheet-enter { animation: sheetUp 0.22s ease-out; }
-@keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.screen-enter { animation: screenIn 0.18s ease-out; }
-@keyframes screenIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
-.marquee-track { overflow: hidden; white-space: nowrap; }
-.marquee-text { display: inline-block; padding-left: 100%; animation: marquee 16s linear infinite; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-`;
-
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function formatTL(n) { return Number(n || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
 function paidTotal(inv) {
   if (Array.isArray(inv.payments) && inv.payments.length) return inv.payments.reduce((s, p) => s + p.amount, 0);
-  if (inv.status === 'paid') return inv.amount; // eski (kısmi ödeme öncesi) kayıtlarla uyumluluk
+  if (inv.status === 'paid') return inv.amount;
   return 0;
 }
 function remainingAmount(inv) { return Math.max(0, inv.amount - paidTotal(inv)); }
@@ -169,23 +167,6 @@ function daysSince(dateStr) {
   const now = new Date();
   return Math.floor((now - d) / 86400000);
 }
-function currentYYYYMM() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
-
-function parseTrDate(str) {
-  const parts = (str || '').split('.');
-  if (parts.length !== 3) return null;
-  const [d, m, y] = parts.map(Number);
-  if (!d || !m || !y) return null;
-  return new Date(y, m - 1, d);
-}
-function daysBetweenIsoAndDate(isoDateStr, dateObj) {
-  if (!dateObj) return 0;
-  const start = new Date(isoDateStr + 'T00:00:00');
-  return Math.floor((dateObj - start) / 86400000);
-}
 
 function personReliability(personInvoices) {
   if (!personInvoices || personInvoices.length === 0) return null;
@@ -193,15 +174,7 @@ function personReliability(personInvoices) {
   let worst = 'onTime';
   personInvoices.forEach(inv => {
     const rem = remainingAmount(inv);
-    let days;
-    if (rem <= 0.004) {
-      const payments = inv.payments || [];
-      const last = payments[payments.length - 1];
-      if (!last) return;
-      days = daysBetweenIsoAndDate(inv.date, parseTrDate(last.date));
-    } else {
-      days = daysSince(inv.date);
-    }
+    let days = daysSince(inv.date);
     let cat = 'onTime';
     if (days > 45) cat = 'late';
     else if (days > 30) cat = 'medium';
@@ -213,9 +186,67 @@ function personReliability(personInvoices) {
 const CURRENCIES = ['TRY', 'USD', 'EUR', 'GBP'];
 const EXPENSE_CATEGORIES = ['kira', 'maas', 'parca', 'fatura', 'yakit', 'diger'];
 
-const LOGO_DATA_URI = 'data:image/png;base64,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';
+function App() {
+  const [data, setData] = useState({ people: [], invoices: [], expenses: [] });
+  const [loading, setLoading] = useState(true);
 
-// Code continues with UI render logic...
+  // Real-time listener from Firebase Firestore
+  useEffect(() => {
+    const unsubscribe = window.db.collection('app_data').doc('main_store')
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const fetchedData = doc.data().value;
+          if (fetchedData) {
+            setData(typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData);
+          }
+        }
+        setLoading(false);
+      }, (err) => {
+        console.error("Firestore sync error:", err);
+        setLoading(false);
+      });
+
+    return () => unsubscribe();
+  }, []);
+
+  const saveData = async (newData) => {
+    setData(newData);
+    await window.storage.set('main_store', JSON.stringify(newData));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#14151A] text-white font-body">
+        <div className="text-center">
+          <RefreshCw className="animate-spin mb-2 mx-auto" size={32} />
+          <p>Firebase Verileri Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#14151A] text-[#F5F5F0] font-body p-4">
+      <header className="mb-6 flex justify-between items-center border-b border-gray-800 pb-4">
+        <h1 className="text-xl font-bold font-display text-white">Hikmetoğlu Motor</h1>
+        <div className="flex items-center gap-2 text-xs text-green-400">
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          Firebase Live Sync Aktif
+        </div>
+      </header>
+      
+      <main>
+        <div className="bg-[#1E2027] p-6 rounded-lg shadow-md mb-6">
+          <h2 className="text-lg font-semibold mb-4 text-white">Sistem Durumu</h2>
+          <p className="text-gray-400">Toplam Müşteri/Kişi: <span className="text-white font-bold">{data.people ? data.people.length : 0}</span></p>
+          <p className="text-gray-400">Toplam Fatura/İşlem: <span className="text-white font-bold">{data.invoices ? data.invoices.length : 0}</span></p>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 </body>
 </html>
