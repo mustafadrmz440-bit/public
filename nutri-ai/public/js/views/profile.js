@@ -49,7 +49,7 @@ export function render(root) {
         <div class="card">
           <h3 class="card-title">${icon('download', 18)} Verilerim</h3>
           <p class="muted">Günlük kayıtların, su ve kilo geçmişin dahil tüm verilerini JSON olarak indir.</p>
-          <a class="btn btn-ghost" href="/api/export" download>${icon('download', 17)} Verilerimi İndir</a>
+          <button class="btn btn-ghost" id="export-btn">${icon('download', 17)} Verilerimi İndir</button>
         </div>
 
         <div class="card session-card">
@@ -74,6 +74,42 @@ export function render(root) {
   });
 
   root.querySelector('#edit-targets').addEventListener('click', () => openEditModal());
+
+  root.querySelector('#export-btn').addEventListener('click', async () => {
+    try {
+      const data = await api('/api/export');
+      const json = JSON.stringify(data, null, 2);
+      if (typeof window !== 'undefined' && window.LOCAL_BACKEND) {
+        // WebView'de blob indirme güvenilir değil — kopyalanabilir modal göster
+        openModal(`
+          <div class="modal-head"><h3>Verilerim (JSON)</h3><button class="icon-btn" data-close>${icon('x', 18)}</button></div>
+          <div class="modal-body">
+            <p class="muted">Aşağıdaki metni kopyalayıp güvenli bir yere kaydedebilirsin.</p>
+            <textarea class="input" readonly style="min-height:260px;font-family:monospace;font-size:12px">${json.replace(/</g, '&lt;')}</textarea>
+            <button class="btn btn-primary btn-block" id="copy-json" style="margin-top:10px">${icon('check', 16)} Tümünü Kopyala</button>
+          </div>
+        `, {
+          width: 560,
+          onMount(overlay) {
+            overlay.querySelector('#copy-json').addEventListener('click', async () => {
+              const ta = overlay.querySelector('textarea');
+              ta.select();
+              try { await navigator.clipboard.writeText(ta.value); toast('Panoya kopyalandı', 'ok'); }
+              catch { document.execCommand('copy'); toast('Panoya kopyalandı', 'ok'); }
+            });
+          }
+        });
+      } else {
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'nutriai-verilerim.json';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+        toast('Verilerin indirildi', 'ok');
+      }
+    } catch (e) { toast(e.message, 'err'); }
+  });
 
   root.querySelector('#delete-account').addEventListener('click', () => confirmModal({
     title: 'Hesabını kalıcı olarak sil',

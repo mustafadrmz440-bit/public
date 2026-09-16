@@ -4,3 +4,9 @@ data/db.json.tmp
 
 # İndirme arşivi (build çıktısı)
 public/download/
+
+# Android derleme çıktıları ve araçlar
+android/build/
+android/dist/
+android/tools/
+android/signing-key.json

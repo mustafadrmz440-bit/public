@@ -32,10 +32,14 @@ nutri-ai/
 │   ├── recipes.json   Tarif veritabanı
 │   ├── foods.json     Besin kataloğu (80+) + ImageNet→besin eşleme haritası
 │   └── db.json        Çalışma zamanı verisi (git'e girmez)
+├── android/           APK derleme hattı (apktool + smali + v1 imzalama)
+│   ├── proj/          Android projesi (manifest, smali, res, assets)
+│   ├── build-webapp.mjs  Tek dosyalık çevrimdışı web paketi üretici
+│   └── sign-apk.mjs   node-forge ile APK imzalayıcı
 └── public/
     ├── index.html     Tek sayfa uygulama kabuğu
     ├── css/app.css    Tasarım sistemi
-    └── js/            ES modülleri: router, görünümler, AI motoru
+    └── js/            ES modülleri: router, görünümler, AI motoru, local-backend
 ```
 
 ## API Özeti

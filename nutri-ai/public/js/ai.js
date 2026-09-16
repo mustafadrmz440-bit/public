@@ -9,6 +9,9 @@ let stream = null;
 
 const CDN_TF = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js';
 const CDN_MN = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js';
+// Yerel kopyalar (APK/çevrimdışı): önce dene, olmazsa CDN'e düş
+const LOCAL_TF = 'vendor/tf.min.js';
+const LOCAL_MN = 'vendor/mobilenet.min.js';
 
 function loadScript(src) {
   return new Promise((resolve, reject) => {

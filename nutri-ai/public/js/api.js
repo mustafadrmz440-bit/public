@@ -1,5 +1,7 @@
 /* api.js — İstemci durum yönetimi + API katmanı */
 
+import { localAPI } from './local-backend.js';
+
 export const state = {
   user: null,
   recipes: [],
@@ -9,6 +11,8 @@ export const state = {
 };
 
 export async function api(path, opts = {}) {
+  // APK / çevrimdışı mod: tüm API tarayıcı içinde çalışır
+  if (typeof window !== 'undefined' && window.LOCAL_BACKEND) return localAPI(path, opts);
   const { body, ...rest } = opts;
   const res = await fetch(path, {
     credentials: 'same-origin',
