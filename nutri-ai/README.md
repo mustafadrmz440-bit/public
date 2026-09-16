@@ -33,6 +33,7 @@ nutri-ai/
 │   ├── foods.json     Besin kataloğu (80+) + ImageNet→besin eşleme haritası
 │   └── db.json        Çalışma zamanı verisi (git'e girmez)
 ├── android/           APK derleme hattı (apktool + smali + v1 imzalama)
+├── androidstudio/     Android Studio projesi (Kotlin, Gradle, tek tuşla Run)
 │   ├── proj/          Android projesi (manifest, smali, res, assets)
 │   ├── build-webapp.mjs  Tek dosyalık çevrimdışı web paketi üretici
 │   └── sign-apk.mjs   node-forge ile APK imzalayıcı
