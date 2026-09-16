@@ -207,6 +207,8 @@ app.delete('/api/account', requireAuth, h((req, res) => {
 
 app.get('/api/recipes', h((req, res) => res.json({ recipes: require('./engine').recipes })));
 
+app.get('/api/foods', h((req, res) => res.json({ catalog: foods.catalog, aiMap: foods.aiMap })));
+
 /* ---------------------------- Haftalık program --------------------------- */
 
 function weekMondayISO(dateISO) {
