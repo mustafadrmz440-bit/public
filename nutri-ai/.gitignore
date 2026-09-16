@@ -10,3 +10,5 @@ android/build/
 android/dist/
 android/tools/
 android/signing-key.json
+# Android web paketi (derleme çıktısı)
+android/proj/assets/www/
