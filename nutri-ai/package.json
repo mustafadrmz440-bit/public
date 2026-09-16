@@ -1,0 +1,13 @@
+{
+  "name": "nutri-ai",
+  "version": "1.0.0",
+  "description": "NutriAI — Yapay zeka destekli kişisel beslenme koçu (kamera ile kalori tarama, kişisel beslenme programı, tarifler)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,815 @@
+[
+  {
+    "id": "r-menemen",
+    "name": "Pratik Menemen",
+    "desc": "Yumurtanın klasikleleşmiş en lezzetli hali; domates ve biberle hafifçe pişirilmiş, zeytinyağlı bir sabah klasiği.",
+    "img": "/img/r-menemen.jpg",
+    "slots": [
+      "kahvalti"
+    ],
+    "kcal": 320,
+    "protein": 18,
+    "carbs": 12,
+    "fat": 21,
+    "time": 15,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "glutensiz",
+      "pratik"
+    ],
+    "ingredients": [
+      {
+        "q": "2 adet",
+        "item": "Yumurta"
+      },
+      {
+        "q": "1 adet orta",
+        "item": "Domates, rendelenmiş"
+      },
+      {
+        "q": "1 adet",
+        "item": "Yeşil biber, doğranmış"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Zeytinyağı"
+      },
+      {
+        "q": "—",
+        "item": "Tuz, karabiber, pul biber"
+      },
+      {
+        "q": "1 tutam",
+        "item": "Maydanoz"
+      }
+    ],
+    "steps": [
+      "Tavaya zeytinyağını alıp orta ateşte biberleri 2 dakika soteleyin.",
+      "Rendelenmiş domatesi ekleyin, suyu çekene dek 4-5 dakika pişirin.",
+      "Çırpılmış yumurtaları ekleyin, kısık ateşte kıvam alana kadar karıştırın.",
+      "Tuz ve baharatları ekleyip ocaktan alın, maydanozla servis edin."
+    ],
+    "tip": "Yumurtayı fazla pişirmek yerine hafif akışkan bırakmak hem lezzeti hem protein kalitesini korur."
+  },
+  {
+    "id": "r-yulaf",
+    "name": "Protein Yulaf Kasesi",
+    "desc": "Yavaş sindirilen karbonhidrat, lif ve proteinin sabaha mükemmel başlangıç taşıyan doyurucu kasesi.",
+    "img": "/img/r-yulaf.jpg",
+    "slots": [
+      "kahvalti"
+    ],
+    "kcal": 420,
+    "protein": 22,
+    "carbs": 58,
+    "fat": 11,
+    "time": 10,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "yuksek-protein",
+      "lifli"
+    ],
+    "ingredients": [
+      {
+        "q": "60 g",
+        "item": "Yulaf ezmesi"
+      },
+      {
+        "q": "200 ml",
+        "item": "Süt veya badem sütü"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Muz, dilimlenmiş"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Chia tohumu"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Fıstık ezmesi"
+      },
+      {
+        "q": "—",
+        "item": "Tarçın"
+      }
+    ],
+    "steps": [
+      "Yulafı sütle birlikte kısık ateşte 4-5 dakika pişirin.",
+      "Chia tohumunu ekleyip 1 dakika daha karıştırarak pişirin.",
+      "Kaseye alın, muz dilimleri, fıstık ezmesi ve tarçınla süsleyin."
+    ],
+    "tip": "Gece önce hazırlayıp buzdolabında beklettiğinizde 'overnight oats' versiyonu daha da kremalı olur."
+  },
+  {
+    "id": "r-tost",
+    "name": "Avokadolu Tam Buğday Tost",
+    "desc": "Sağlıklı yağlar, kompleks karbonhidrat ve protein buluşması; kafe standartlarının çok üzerinde doyumluk.",
+    "img": "/img/r-tost.jpg",
+    "slots": [
+      "kahvalti"
+    ],
+    "kcal": 360,
+    "protein": 15,
+    "carbs": 36,
+    "fat": 17,
+    "time": 10,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "lifli"
+    ],
+    "ingredients": [
+      {
+        "q": "2 dilim",
+        "item": "Tam buğday ekşi maya ekmek"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Avokado"
+      },
+      {
+        "q": "1 adet",
+        "item": "Haşlanmış yumurta"
+      },
+      {
+        "q": "1 tutam",
+        "item": "Roka"
+      },
+      {
+        "q": "—",
+        "item": "Limon suyu, pul biber, tuz"
+      }
+    ],
+    "steps": [
+      "Ekmeği tost makinesinde veya tavada hafifçe kızartın.",
+      "Avokadoyu çatalla ezin, limon suyu ve tuzla karıştırın.",
+      "Ekmeklerin üzerine avokadoyu yayın, roka ve dilimlenmiş yumurtayı ekleyin.",
+      "Pul biberle servis edin."
+    ],
+    "tip": "Limon suyu avokadonun kararmasını önler ve tadını canlandırır."
+  },
+  {
+    "id": "r-smoothie",
+    "name": "Yeşil Smoothie Kasesi",
+    "desc": "Ispanak, muz ve ananasın yoğurtla buluştuğu, vitamin dolusu renkli kase; 5 dakikada hazırdır.",
+    "img": "/img/r-smoothie.jpg",
+    "slots": [
+      "kahvalti",
+      "ara"
+    ],
+    "kcal": 270,
+    "protein": 9,
+    "carbs": 46,
+    "fat": 6,
+    "time": 10,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "pratik",
+      "dusuk-kalori"
+    ],
+    "ingredients": [
+      {
+        "q": "1 avuç",
+        "item": "Taze ıspanak"
+      },
+      {
+        "q": "1 adet",
+        "item": "Muz"
+      },
+      {
+        "q": "100 g",
+        "item": "Ananas"
+      },
+      {
+        "q": "100 g",
+        "item": "Süzme yoğurt"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Chia tohumu"
+      },
+      {
+        "q": "100 ml",
+        "item": "Su veya badem sütü"
+      }
+    ],
+    "steps": [
+      "Tüm malzemeleri blendera koyup pürüzsüz olana dek çekin.",
+      "Kaseye alın; isterseniz üstünü yulaf ve meyve dilimleriyle süsleyin."
+    ],
+    "tip": "Kase kıvamı için sıvıyı azar azar ekleyin; daha koyu kıvam kaşıkla yemeye uygundur."
+  },
+  {
+    "id": "r-omelet",
+    "name": "Beyaz Peynirli Sebze Omlet",
+    "desc": "Üç yumurtanın ıspanak ve beyaz peynirle buluşması; düşük karbonhidrat, yüksek proteinli sabah seçeneği.",
+    "img": "/img/r-omelet.jpg",
+    "slots": [
+      "kahvalti"
+    ],
+    "kcal": 310,
+    "protein": 24,
+    "carbs": 7,
+    "fat": 20,
+    "time": 12,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "yuksek-protein",
+      "glutensiz",
+      "dusuk-karb"
+    ],
+    "ingredients": [
+      {
+        "q": "3 adet",
+        "item": "Yumurta"
+      },
+      {
+        "q": "30 g",
+        "item": "Beyaz peynir, ufalanmış"
+      },
+      {
+        "q": "1 avuç",
+        "item": "Ispanak"
+      },
+      {
+        "q": "5-6 adet",
+        "item": "Kiraz domates"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Zeytinyağı"
+      }
+    ],
+    "steps": [
+      "Yumurtaları çırpıp tuz-karabiberle tatlandırın.",
+      "Yapışmaz tavada ıspanağı 1 dakika soteleyin.",
+      "Yumurtaları ekleyin, kısık ateşte üzeri hafif ıslak kalana dek pişirin.",
+      "Peynir ve ikiye bölünmüş kiraz domatesleri ekleyip ikiye katlayarak servis edin."
+    ],
+    "tip": "Tavanın yeterince ısınmasını bekleyin; omlet tabağa temiz çıksın."
+  },
+  {
+    "id": "r-quinoa",
+    "name": "Izgara Tavuklu Quinoa Bowl",
+    "desc": "Marinantlı ızgara tavuk, quinoa ve taze sebzelerle restoran kalitesinde doyurucu bir öğle kasesi.",
+    "img": "/img/r-quinoa.jpg",
+    "slots": [
+      "oglen"
+    ],
+    "kcal": 480,
+    "protein": 38,
+    "carbs": 46,
+    "fat": 15,
+    "time": 25,
+    "difficulty": "Orta",
+    "tags": [
+      "yuksek-protein",
+      "glutensiz"
+    ],
+    "ingredients": [
+      {
+        "q": "150 g",
+        "item": "Tavuk göğsü"
+      },
+      {
+        "q": "60 g (kuru)",
+        "item": "Quinoa"
+      },
+      {
+        "q": "1/4 adet",
+        "item": "Avokado"
+      },
+      {
+        "q": "8-10 adet",
+        "item": "Kiraz domates"
+      },
+      {
+        "q": "1 tutam",
+        "item": "Roka"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Zeytinyağı + limon suyu"
+      }
+    ],
+    "steps": [
+      "Tavuğu zeytinyağı, limon, tuz ve kekikle 10 dakika marine edin.",
+      "Quinoayı 2 kat suyla haşlayıp suyunu çekince dinlendirin.",
+      "Tavuğu ızgarada her yüzü 5-6 dakika pişirin, dilimleyin.",
+      "Kaseye quinoa, sebzeler ve tavuğu dizin; zeytinyağı-limonla servis edin."
+    ],
+    "tip": "Tavuğu pişirdikten sonra 3-4 dakika dinlendirmek etin sulu kalmasını sağlar."
+  },
+  {
+    "id": "r-mercimek",
+    "name": "Limonlu Kırmızı Mercimek Çorbası",
+    "desc": "Anadolu mutfağının şifalı klasiği; lif ve bitkisel protein deposu, hafif ama doyurucu.",
+    "img": "/img/r-mercimek.jpg",
+    "slots": [
+      "oglen",
+      "aksam"
+    ],
+    "kcal": 260,
+    "protein": 14,
+    "carbs": 40,
+    "fat": 5,
+    "time": 30,
+    "difficulty": "Kolay",
+    "tags": [
+      "vegan",
+      "vejetaryen",
+      "lifli",
+      "dusuk-kalori"
+    ],
+    "ingredients": [
+      {
+        "q": "80 g (kuru)",
+        "item": "Kırmızı mercimek"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Soğan, doğranmış"
+      },
+      {
+        "q": "1 adet küçük",
+        "item": "Havuç"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Zeytinyağı"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Limon suyu"
+      },
+      {
+        "q": "—",
+        "item": "Kimyon, tuz, karabiber"
+      }
+    ],
+    "steps": [
+      "Zeytinyağında soğanı pembeleştirin, havucu ekleyip 2 dakika soteleyin.",
+      "Yıkanmış mercimek ve 2 su bardağı suyu ekleyin.",
+      "Mercimekler dağılana dek 20 dakika pişirin, blenderdan geçirin.",
+      "Limon suyu ve baharatlarla tatlandırıp servis edin."
+    ],
+    "tip": "Üzerine kızdırılmış pul biberli tereyağı gezdirmek istersen kaloriye ~40 kcal eklemeyi unutma."
+  },
+  {
+    "id": "r-tonsalata",
+    "name": "Ton Balıklı Kinoa Salata",
+    "desc": "Omega-3 zengini ton balığı ve protein yüklü kinoanın taze sebzelerle buluştuğu hafif öğle tabağı.",
+    "img": "/img/r-tonsalata.jpg",
+    "slots": [
+      "oglen"
+    ],
+    "kcal": 410,
+    "protein": 32,
+    "carbs": 30,
+    "fat": 17,
+    "time": 20,
+    "difficulty": "Kolay",
+    "tags": [
+      "yuksek-protein",
+      "glutensiz",
+      "dusuk-karb"
+    ],
+    "ingredients": [
+      {
+        "q": "1 kutu (80 g süzülmüş)",
+        "item": "Ton balığı (suda)"
+      },
+      {
+        "q": "40 g (kuru)",
+        "item": "Quinoa"
+      },
+      {
+        "q": "2 avuç",
+        "item": "Karışık yeşillik"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Salatalık"
+      },
+      {
+        "q": "8 adet",
+        "item": "Kiraz domates"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Zeytinyağı + limon"
+      }
+    ],
+    "steps": [
+      "Quinoayı haşlayıp soğumaya bırakın.",
+      "Yeşillikleri yıkayıp geniş kaseye alın, sebzeleri ekleyin.",
+      "Ton balığını ve quinoayı ilave edin.",
+      "Zeytinyağı-limon sosuyla harmanlayıp servis edin."
+    ],
+    "tip": "Ton balığını konserve suyunu süzerek kullanmak gereksiz sodyumu azaltır."
+  },
+  {
+    "id": "r-falafel",
+    "name": "Fırın Falafel & Humus Tabağı",
+    "desc": "Kızartma yerine fırında pişirilen çıtır falafeller, humus ve tam buğday lavaşla Orta Doğu esintili tabak.",
+    "img": "/img/r-falafel.jpg",
+    "slots": [
+      "oglen"
+    ],
+    "kcal": 470,
+    "protein": 17,
+    "carbs": 56,
+    "fat": 18,
+    "time": 40,
+    "difficulty": "Orta",
+    "tags": [
+      "vegan",
+      "vejetaryen",
+      "lifli"
+    ],
+    "ingredients": [
+      {
+        "q": "6 adet",
+        "item": "Fırın falafel (hazır veya ev yapımı)"
+      },
+      {
+        "q": "3 yemek kaşığı",
+        "item": "Humus"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Tam buğday lavaş"
+      },
+      {
+        "q": "1 avuç",
+        "item": "Marul, turşu, domates"
+      },
+      {
+        "q": "—",
+        "item": "Tahin-limon sos"
+      }
+    ],
+    "steps": [
+      "Falafelleri 200°C fırında 15-18 dakika, arada çevirerek pişirin.",
+      "Lavaşı hafifçe ısıtıp yeşilliklerle tabağa yayın.",
+      "Humusu gezdirin, falafelleri ekleyin.",
+      "Tahin sosuyla servis edin."
+    ],
+    "tip": "Ev yapımı falafel için ıslatılmış nohudu maydanoz-soğan-kimyonla püre yapıp şekil verin."
+  },
+  {
+    "id": "r-tavuklu-bulgur",
+    "name": "Tavuklu Sebzeli Bulgur Pilavı",
+    "desc": "Tek tencerede, düşük yağla pişen; lifli bulgur ve yağsız proteinle dengeli Türk mutfağı klasiği.",
+    "img": "/img/r-tavuklu-bulgur.jpg",
+    "slots": [
+      "oglen",
+      "aksam"
+    ],
+    "kcal": 440,
+    "protein": 33,
+    "carbs": 50,
+    "fat": 11,
+    "time": 30,
+    "difficulty": "Kolay",
+    "tags": [
+      "yuksek-protein",
+      "lifli"
+    ],
+    "ingredients": [
+      {
+        "q": "120 g",
+        "item": "Tavuk göğsü, kuşbaşı"
+      },
+      {
+        "q": "70 g",
+        "item": "Pilavlık bulgur"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Soğan ve yeşil biber"
+      },
+      {
+        "q": "1 adet",
+        "item": "Domates, rende"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Domates salçası"
+      },
+      {
+        "q": "—",
+        "item": "Pul biber, karabiber, tuz"
+      }
+    ],
+    "steps": [
+      "Tavuğu yapışmaz tencerede suyu bırakana dek pişirin.",
+      "Soğan ve biberi ekleyip 3 dakika soteleyin; salça ve domatesi ilave edin.",
+      "Bulgur ve 1,5 kat ılık suyu ekleyip kısık ateşte suyunu çekene dek pişirin.",
+      "10 dakika demlendirdikten sonra harmanlayıp servis edin."
+    ],
+    "tip": "Yanına bol yoğurtlu salata eklerseniz öğünin doyum seviyesi ciddi artar."
+  },
+  {
+    "id": "r-somon",
+    "name": "Izgara Somon & Fırın Sebzeler",
+    "desc": "Omega-3 dolusu somon, zeytinyağlı fırın sebzelerle akşam için şık ve doyurucu bir tabak.",
+    "img": "/img/r-somon.svg",
+    "slots": [
+      "aksam"
+    ],
+    "kcal": 520,
+    "protein": 40,
+    "carbs": 16,
+    "fat": 33,
+    "time": 30,
+    "difficulty": "Orta",
+    "tags": [
+      "yuksek-protein",
+      "glutensiz",
+      "dusuk-karb"
+    ],
+    "ingredients": [
+      {
+        "q": "170 g",
+        "item": "Somon fileto"
+      },
+      {
+        "q": "250 g",
+        "item": "Kabak, biber, brokoli, havuç"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Zeytinyağı"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Limon"
+      },
+      {
+        "q": "—",
+        "item": "Tuz, karabiber, kekik"
+      }
+    ],
+    "steps": [
+      "Fırını 200°C'ye ısıtın; sebzeleri zeytinyağı ve baharatla harmanlayıp tepsiye alın.",
+      "Sebzeleri 15 dakika pişirin.",
+      "Somonu tuz-karabiberle tatlandırıp sebzelerin yanına ekleyin, 10-12 dakika daha pişirin.",
+      "Limon dilimiyle sıcak servis edin."
+    ],
+    "tip": "Somonu pişirmeden 15 dakika önce buzdolabından çıkarıp oda sıcaklığına gelmesini sağlamak kurumasını önler."
+  },
+  {
+    "id": "r-barbunya",
+    "name": "Zeytinyağlı Barbunya",
+    "desc": "Hafif zeytinyağlı, soğuk da lezzetli; bitkisel protein ve lif kaynaklı klasik zeytinyağlısı.",
+    "img": "/img/r-barbunya.svg",
+    "slots": [
+      "aksam"
+    ],
+    "kcal": 320,
+    "protein": 14,
+    "carbs": 50,
+    "fat": 10,
+    "time": 45,
+    "difficulty": "Kolay",
+    "tags": [
+      "vegan",
+      "vejetaryen",
+      "lifli"
+    ],
+    "ingredients": [
+      {
+        "q": "80 g (kuru)",
+        "item": "Barbunya fasulyesi"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Soğan"
+      },
+      {
+        "q": "1 adet",
+        "item": "Domates, rende"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Havuç"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Zeytinyağı"
+      },
+      {
+        "q": "1 dilim",
+        "item": "Tam buğday ekmek (yanında)"
+      }
+    ],
+    "steps": [
+      "Barbunyayı bir gece ıslatın; yumuşayana dek haşlayın.",
+      "Zeytinyağında soğanı söndürün, havuç ve domatesi ekleyin.",
+      "Haşlanmış barbunyayı ilave edip 15 dakika kısık ateşte pişirin.",
+      "Iılınarak servis edin; yanına ekmek ekleyin."
+    ],
+    "tip": "Zeytinyağını pişirme sonunda eklemek hem aromayı korur hem de besin değerini artırır."
+  },
+  {
+    "id": "r-guvec",
+    "name": "Hindi Etli Sebzeli Güveç",
+    "desc": "Yağsız hindi etinin bol sebzelerle fırında yavaşça piştiği, sıcak ve doyurucu akşam yemeği.",
+    "img": "/img/r-guvec.svg",
+    "slots": [
+      "aksam"
+    ],
+    "kcal": 460,
+    "protein": 37,
+    "carbs": 26,
+    "fat": 23,
+    "time": 50,
+    "difficulty": "Orta",
+    "tags": [
+      "yuksek-protein",
+      "glutensiz"
+    ],
+    "ingredients": [
+      {
+        "q": "130 g",
+        "item": "Hindi kuşbaşı"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Patlıcan ve kabak"
+      },
+      {
+        "q": "1 adet küçük",
+        "item": "Patates"
+      },
+      {
+        "q": "1 adet",
+        "item": "Domates + 1 diş sarımsak"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Zeytinyağı"
+      },
+      {
+        "q": "—",
+        "item": "Kekik, tuz, karabiber"
+      }
+    ],
+    "steps": [
+      "Hindi etini zeytinyağı ve baharatlarla harmanlayıp güvece alın.",
+      "Sebzeleri iri doğrayıp üzerine dizin.",
+      "Rendelenmiş domates ve az su ekleyin.",
+      "190°C fırında 40-45 dakika, sebzeler yumuşayana dek pişirin."
+    ],
+    "tip": "Güveç kapağını son 10 dakika açıp üstünü hafif kızartın."
+  },
+  {
+    "id": "r-yoghurtbowl",
+    "name": "Meyveli Yoğurt Kasesi",
+    "desc": "Süzme yoğurt, mevsim meyveleri ve çıtır yulafla 5 dakikada hazırlanan hafif ara öğün.",
+    "img": "/img/r-yoghurtbowl.svg",
+    "slots": [
+      "ara"
+    ],
+    "kcal": 210,
+    "protein": 15,
+    "carbs": 26,
+    "fat": 5,
+    "time": 5,
+    "difficulty": "Kolay",
+    "tags": [
+      "vejetaryen",
+      "pratik",
+      "yuksek-protein"
+    ],
+    "ingredients": [
+      {
+        "q": "150 g",
+        "item": "Süzme yoğurt"
+      },
+      {
+        "q": "100 g",
+        "item": "Çilek veya mevsim meyvesi"
+      },
+      {
+        "q": "10 g",
+        "item": "Yulaf ezmesi"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Bal"
+      },
+      {
+        "q": "1 adet",
+        "item": "Ceviz içi"
+      }
+    ],
+    "steps": [
+      "Yoğurdu kaseye alın.",
+      "Meyveleri, yulafı ve cevizi üzerine ekleyin.",
+      "Bal ile tatlandırıp hemen servis edin."
+    ],
+    "tip": "Ara öğünü tatlandırmak için bal yerine tarçın da kullanabilirsiniz: 15 kcal kazanç."
+  },
+  {
+    "id": "r-enerji",
+    "name": "Hurmali Yulaf Enerji Topları",
+    "desc": "Rafine şeker içermeyen, hurmanın doğal tatlılığıyla enerji veren 2'li pratik atıştırmalık.",
+    "img": "/img/r-enerji.svg",
+    "slots": [
+      "ara"
+    ],
+    "kcal": 185,
+    "protein": 5,
+    "carbs": 23,
+    "fat": 8,
+    "time": 15,
+    "difficulty": "Kolay",
+    "tags": [
+      "vegan",
+      "vejetaryen",
+      "pratik"
+    ],
+    "ingredients": [
+      {
+        "q": "3 adet",
+        "item": "Kuru hurma (çekirdeği çıkarılmış)"
+      },
+      {
+        "q": "40 g",
+        "item": "Yulaf ezmesi"
+      },
+      {
+        "q": "1 yemek kaşığı",
+        "item": "Fıstık ezmesi"
+      },
+      {
+        "q": "1 tatlı kaşığı",
+        "item": "Kakao"
+      },
+      {
+        "q": "—",
+        "item": "Hindistan cevizi rendesi (üstü için)"
+      }
+    ],
+    "steps": [
+      "Hurmaları sıcak suda 10 dakika yumuşatın.",
+      "Tüm malzemeleri blenderdan geçirin.",
+      "Ceviz büyüklüğünde toplar yapıp hindistan cevizine bulayın.",
+      "Buzdolabında 30 dakika dinlendirin (porsiyon: 2 top)."
+    ],
+    "tip": "Buzdolabında 1 hafta saklanır; spor öncesi ideal doğal enerji kaynağıdır."
+  },
+  {
+    "id": "r-humussebze",
+    "name": "Humus & Çubuk Sebzeler",
+    "desc": "Lif ve bitkisel protein dolusu humus, çıtır çubuk sebzelerle hafif ve fonksiyonel ara öğün.",
+    "img": "/img/r-humussebze.svg",
+    "slots": [
+      "ara"
+    ],
+    "kcal": 190,
+    "protein": 8,
+    "carbs": 18,
+    "fat": 10,
+    "time": 10,
+    "difficulty": "Kolay",
+    "tags": [
+      "vegan",
+      "vejetaryen",
+      "dusuk-kalori",
+      "pratik"
+    ],
+    "ingredients": [
+      {
+        "q": "3 yemek kaşığı",
+        "item": "Humus"
+      },
+      {
+        "q": "200 g",
+        "item": "Havuç, salatalık, kereviz (çubuk şeklinde)"
+      },
+      {
+        "q": "1/2 adet",
+        "item": "Limon"
+      },
+      {
+        "q": "—",
+        "item": "Kimyon, pul biber"
+      }
+    ],
+    "steps": [
+      "Sebzeleri parmak boyutunda çubuklar halinde doğrayın.",
+      "Humusu kaseye alıp limon suyu ve kimyonla karıştırın.",
+      "Sebzeleri humusa banarak tüketin."
+    ],
+    "tip": "Humusu evde nohut + tahin + limon + sarımsakla 5 dakikada hazırlayabilirsiniz."
+  }
+]
