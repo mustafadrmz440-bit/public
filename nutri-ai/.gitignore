@@ -1,3 +1,6 @@
 node_modules/
 data/db.json
 data/db.json.tmp
+
+# İndirme arşivi (build çıktısı)
+public/download/
