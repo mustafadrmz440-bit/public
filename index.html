@@ -1,252 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-<title>Hikmetoğlu Motor — Alacak Verecek Programı</title>
-
-<!-- React & Styling CDNs -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-
-<!-- Firebase SDKs (v9 Compat Build for direct browser/script usage) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-
-<!-- Firebase Initialization -->
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCk7Kk-M6I3eWsgC4pr3xtjWTfJd-k_tng",
-    authDomain: "hikmets-motors.firebaseapp.com",
-    projectId: "hikmets-motors",
-    storageBucket: "hikmets-motors.firebasestorage.app",
-    messagingSenderId: "1031130510268",
-    appId: "1:1031130510268:web:fa406b65ba0e975fbab1b9",
-    measurementId: "G-GMRXGF6VR7"
-  };
-
-  // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  
-  // Make Firestore globally available
-  window.db = firebase.firestore();
-  if (firebase.analytics) {
-    window.analytics = firebase.analytics();
-  }
-</script>
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
-  html, body { margin: 0; padding: 0; }
-  body { font-family: 'Inter', sans-serif; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1526">
+  <title>ServisPilot — Araç Servis Takip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0b1526;--navy2:#121f33;--ink:#172033;--muted:#697386;--line:#e7eaf0;--bg:#f5f7fa;--white:#fff;--orange:#ff6b35;--orange2:#e9501c;--green:#1da981;--blue:#3976e8;--yellow:#e9a520;--red:#e14d5c;--shadow:0 16px 40px rgba(22,32,51,.09);--radius:16px}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--bg)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+    .icon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center}.icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    /* auth */
+    .auth-shell{min-height:100vh;display:grid;grid-template-columns:minmax(390px,42%) 1fr;background:#fff}.auth-form-side{padding:30px clamp(28px,6vw,92px);display:flex;flex-direction:column;justify-content:center;position:relative}.brand{position:absolute;left:clamp(28px,6vw,92px);top:32px;display:flex;align-items:center;gap:11px;font:800 20px Manrope}.brand-mark{width:37px;height:37px;border-radius:11px;background:var(--orange);display:grid;place-items:center;color:#fff;box-shadow:0 8px 18px rgba(255,107,53,.25)}.brand-mark svg{width:22px}.auth-card{width:100%;max-width:430px}.eyebrow{font-weight:700;font-size:12px;letter-spacing:.14em;color:var(--orange);text-transform:uppercase}.auth-card h1{font:800 clamp(30px,3vw,42px)/1.13 Manrope;margin:10px 0 12px;letter-spacing:-.035em}.sub{color:var(--muted);line-height:1.6;margin:0 0 28px}.field{margin-bottom:16px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:8px}.input-wrap{position:relative}.input-wrap .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8790a0}.field input,.field select,.field textarea{width:100%;border:1px solid #dfe3ea;background:#fff;border-radius:11px;padding:13px 14px;color:var(--ink);outline:none;transition:.2s}.input-wrap input{padding-left:45px}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,53,.11)}.row-between{display:flex;justify-content:space-between;align-items:center;gap:12px}.link-btn{border:0;background:none;padding:0;color:var(--orange2);font-weight:700;font-size:13px}.primary{border:0;border-radius:11px;background:var(--orange);color:#fff;padding:14px 18px;font-weight:800;box-shadow:0 9px 20px rgba(255,107,53,.2);transition:.2s}.primary:hover{background:var(--orange2);transform:translateY(-1px)}.full{width:100%}.trial{margin:17px 0;text-align:center;color:var(--muted);font-size:13px}.trial button{color:var(--ink);font-weight:800;border:0;background:none}.divider{height:1px;background:var(--line);margin:22px 0}.customer-box{border:1px solid var(--line);border-radius:14px;padding:17px;background:#fafbfc}.customer-box h3{font:800 15px Manrope;margin:0 0 4px}.customer-box p{font-size:13px;color:var(--muted);margin:0 0 12px}.track-row{display:flex;gap:8px}.track-row input{min-width:0;flex:1;border:1px solid #dfe3ea;border-radius:10px;padding:11px}.outline-btn{border:1px solid #dfe3ea;border-radius:10px;background:#fff;padding:10px 14px;font-weight:800;color:var(--ink)}.admin-link{text-align:center;margin-top:18px;font-size:12px;color:#9aa1ae}.language-picker{position:absolute;right:30px;top:30px}.lang-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 11px;font-weight:700;font-size:12px}.lang-menu{position:absolute;right:0;top:43px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:6px;min-width:150px;box-shadow:var(--shadow);z-index:20}.lang-menu button{display:block;border:0;background:none;padding:9px 10px;width:100%;border-radius:7px;text-align:left}.lang-menu button:hover{background:#f3f5f8}
+    .auth-visual{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:80px;display:flex;align-items:center;justify-content:center}.auth-visual:before{content:'';position:absolute;width:480px;height:480px;border-radius:50%;background:rgba(255,107,53,.13);filter:blur(3px);right:-160px;top:-120px}.auth-visual:after{content:'';position:absolute;width:320px;height:320px;border:1px solid rgba(255,255,255,.07);border-radius:50%;left:-130px;bottom:-130px}.visual-inner{position:relative;z-index:2;max-width:600px}.visual-inner h2{font:800 clamp(34px,4vw,58px)/1.08 Manrope;margin:18px 0;letter-spacing:-.04em}.visual-inner>p{color:#aab5c7;font-size:18px;line-height:1.65;max-width:540px}.floating-card{margin-top:44px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(12px);border-radius:20px;padding:18px;max-width:520px;box-shadow:0 28px 60px rgba(0,0,0,.22)}.car-row{display:grid;grid-template-columns:45px 1fr auto;gap:13px;align-items:center;background:#fff;color:var(--ink);padding:15px;border-radius:13px}.car-icon{width:45px;height:45px;border-radius:11px;background:#fff1eb;color:var(--orange);display:grid;place-items:center}.plate{font:800 14px Manrope}.small-muted{font-size:12px;color:var(--muted);margin-top:3px}.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800;white-space:nowrap}.status:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}.status.progress{background:#eef4ff;color:var(--blue)}.status.waiting{background:#fff7e5;color:#b87900}.status.done{background:#eaf9f4;color:#168366}.status.new{background:#f2efff;color:#7253c4}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.feature{background:rgba(255,255,255,.06);border-radius:13px;padding:14px}.feature b{font:700 13px Manrope;display:block;margin-top:8px}.feature span{color:#8f9caf;font-size:11px}
+    /* app */
+    .app-shell{min-height:100vh;display:grid;grid-template-columns:248px 1fr}.sidebar{background:var(--navy);color:#fff;padding:24px 15px;position:fixed;inset:0 auto 0 0;width:248px;display:flex;flex-direction:column;z-index:30}.side-brand{display:flex;align-items:center;gap:11px;padding:0 10px 28px;font:800 19px Manrope}.side-brand .brand-mark{width:35px;height:35px}.workshop{margin:0 4px 23px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);padding:12px;border-radius:12px}.workshop b{font-size:13px;display:block}.workshop span{font-size:11px;color:#8f9caf}.nav-label{padding:0 11px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#65728a;font-weight:800}.nav{display:flex;flex-direction:column;gap:4px}.nav button{border:0;background:transparent;color:#99a5b8;padding:11px 12px;border-radius:10px;display:flex;gap:11px;align-items:center;text-align:left;font-weight:700;font-size:13px}.nav button:hover,.nav button.active{background:rgba(255,255,255,.08);color:#fff}.nav button.active{box-shadow:inset 3px 0 var(--orange)}.nav .badge{margin-left:auto;background:var(--orange);color:#fff;padding:2px 6px;border-radius:999px;font-size:10px}.side-bottom{margin-top:auto}.user-mini{display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid rgba(255,255,255,.08)}.avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,#ff895f,#dd4c1c);display:grid;place-items:center;font-weight:800}.user-mini b{font-size:12px;display:block}.user-mini span{font-size:10px;color:#7e899c}.logout{border:0;background:transparent;color:#8792a5;margin-left:auto}.main{grid-column:2;min-width:0}.topbar{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 30px;position:sticky;top:0;z-index:20}.mobile-toggle{display:none;border:0;background:none}.page-title{font:800 18px Manrope}.top-search{margin-left:auto;width:300px;position:relative}.top-search input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 40px;background:#f8f9fb}.top-search .icon{position:absolute;left:12px;top:10px;color:#8c94a2}.top-actions{display:flex;align-items:center;gap:9px;margin-left:13px}.icon-btn{width:39px;height:39px;border:1px solid var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;color:#626d7e;position:relative}.dot{position:absolute;width:7px;height:7px;background:var(--orange);border:2px solid #fff;border-radius:50%;right:8px;top:7px}.content{padding:28px 30px 50px;max-width:1500px;margin:auto}.welcome{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:23px;gap:20px}.welcome h1{font:800 26px Manrope;margin:0 0 5px;letter-spacing:-.02em}.welcome p{margin:0;color:var(--muted);font-size:13px}.add-btn{display:flex;align-items:center;gap:8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:grid;grid-template-columns:1fr 43px;gap:10px;box-shadow:0 4px 14px rgba(20,31,49,.025)}.stat-card .label{font-size:12px;color:var(--muted);font-weight:700}.stat-card .value{font:800 26px Manrope;margin:7px 0 3px}.trend{font-size:11px;color:var(--green);font-weight:700}.trend.neutral{color:#9299a6}.stat-icon{width:43px;height:43px;border-radius:12px;display:grid;place-items:center}.stat-icon.orange{background:#fff0eb;color:var(--orange)}.stat-icon.blue{background:#ebf2ff;color:var(--blue)}.stat-icon.green{background:#e9f8f3;color:var(--green)}.stat-icon.yellow{background:#fff6e3;color:var(--yellow)}.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,.75fr);gap:18px}.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 5px 17px rgba(19,30,48,.025);overflow:hidden}.panel-head{padding:18px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.panel-head h2{font:800 15px Manrope;margin:0}.panel-head button{border:0;background:none;color:var(--orange);font-weight:800;font-size:12px}.table-wrap{overflow:auto}.jobs-table{width:100%;border-collapse:collapse;min-width:690px}.jobs-table th{text-align:left;color:#9299a7;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:12px 17px;background:#fbfcfd}.jobs-table td{padding:14px 17px;border-top:1px solid #f0f2f5;font-size:12px}.jobs-table tr{cursor:pointer;transition:.15s}.jobs-table tbody tr:hover{background:#fafbfc}.vehicle-cell{display:flex;align-items:center;gap:10px}.vehicle-dot{width:34px;height:34px;border-radius:9px;background:#f1f4f8;display:grid;place-items:center;color:#697386}.vehicle-cell b{display:block;font:800 12px Manrope}.code{font:700 11px 'DM Sans';color:var(--orange)}.progressbar{height:5px;background:#edf0f4;border-radius:4px;overflow:hidden;margin-top:6px}.progressbar i{display:block;height:100%;background:var(--blue);border-radius:4px}.activity-list{padding:4px 18px 12px}.activity{display:grid;grid-template-columns:34px 1fr;gap:11px;padding:14px 0;border-bottom:1px solid #f0f2f5}.activity:last-child{border:0}.activity-icon{width:34px;height:34px;border-radius:10px;background:#eff4ff;color:var(--blue);display:grid;place-items:center}.activity b{font-size:12px}.activity p{font-size:11px;color:var(--muted);line-height:1.45;margin:3px 0}.activity time{font-size:10px;color:#a0a7b2}.quick{padding:17px;display:grid;grid-template-columns:1fr 1fr;gap:9px}.quick button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:14px 8px;color:var(--ink);font-size:11px;font-weight:800}.quick .icon{display:block;margin:0 auto 8px;color:var(--orange)}
+    /* records page */
+    .toolbar{display:flex;gap:10px;margin-bottom:16px}.toolbar .searchbox{position:relative;flex:1}.toolbar input,.toolbar select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 13px}.toolbar .searchbox input{width:100%;padding-left:41px}.toolbar .searchbox .icon{position:absolute;left:13px;top:11px;color:#8b94a2}.record-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.record-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px;cursor:pointer;transition:.2s}.record-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.record-top{display:flex;justify-content:space-between;gap:10px}.record-plate{font:800 17px Manrope;margin-bottom:4px}.record-card h3{font:800 14px Manrope;margin:16px 0 5px}.record-meta{font-size:11px;color:var(--muted);display:flex;gap:13px;margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(9,17,30,.56);backdrop-filter:blur(3px);z-index:60;display:grid;place-items:center;padding:20px}.modal{background:#fff;border-radius:20px;width:min(610px,100%);max-height:92vh;overflow:auto;box-shadow:0 35px 90px rgba(0,0,0,.25)}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:21px 23px;border-bottom:1px solid var(--line)}.modal-head h2{font:800 18px Manrope;margin:0}.modal-close{border:0;background:#f1f3f6;border-radius:9px;width:34px;height:34px;font-size:21px}.modal-body{padding:22px 23px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.span-2{grid-column:span 2}.modal-actions{display:flex;justify-content:flex-end;gap:9px;padding:17px 23px;border-top:1px solid var(--line)}.secondary{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 17px;font-weight:800}.toast{position:fixed;right:25px;bottom:25px;background:var(--navy);color:#fff;padding:14px 18px;border-radius:12px;z-index:100;box-shadow:var(--shadow);font-size:13px;animation:toast .25s ease}@keyframes toast{from{transform:translateY(15px);opacity:0}}
+    .track-result{padding:3px}.track-hero{background:var(--navy);color:#fff;border-radius:14px;padding:18px;margin-bottom:16px}.track-hero small{color:#9ba8bb}.timeline{position:relative;padding-left:27px}.timeline:before{content:'';position:absolute;left:8px;top:7px;bottom:8px;width:2px;background:#e3e7ed}.timeline-item{position:relative;padding-bottom:18px}.timeline-item:before{content:'';position:absolute;left:-23px;top:3px;width:10px;height:10px;border-radius:50%;background:#d5dae3;border:3px solid #fff;box-shadow:0 0 0 1px #d5dae3}.timeline-item.active:before{background:var(--orange);box-shadow:0 0 0 1px var(--orange)}.timeline-item b{font-size:13px}.timeline-item p{font-size:11px;color:var(--muted);margin:3px 0}
+    @media(max-width:1000px){.auth-shell{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:100vh}.stats{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.record-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.app-shell{display:block}.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none;box-shadow:20px 0 60px rgba(0,0,0,.2)}.main{grid-column:auto}.mobile-toggle{display:grid;margin-right:11px}.topbar{height:65px;padding:0 15px}.top-search{display:none}.content{padding:20px 14px 40px}.welcome{align-items:flex-start}.welcome h1{font-size:21px}.add-btn span{display:none}.stats{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:14px}.stat-card .value{font-size:21px}.record-grid{grid-template-columns:1fr}.form-grid{display:block}.language-picker{right:18px}.auth-form-side{padding:92px 22px 35px}.brand{left:22px;top:27px}.features{grid-template-columns:1fr}.toolbar{flex-wrap:wrap}.toolbar .searchbox{flex-basis:100%}}
+    @media(max-width:430px){.stats{grid-template-columns:1fr}.stat-icon{grid-row:1/3;grid-column:2}.track-row{display:block}.track-row button{width:100%;margin-top:8px}}
+  </style>
 </head>
 <body>
 <div id="root"></div>
-
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useRef } = React;
-
-/* ---- Firebase Firestore Real-Time Storage Engine ---- */
-window.storage = {
-  async get(key) {
-    try {
-      const doc = await window.db.collection('app_data').doc(key).get();
-      if (doc.exists) {
-        return { key, value: doc.data().value };
-      }
-      return null;
-    } catch (e) {
-      console.error("Firebase Read Error:", e);
-      return null;
-    }
-  },
-  async set(key, value) {
-    try {
-      await window.db.collection('app_data').doc(key).set({ value: value });
-      return { key, value };
-    } catch (e) {
-      console.error("Firebase Write Error:", e);
-      return { key, value };
-    }
-  },
-  async delete(key) {
-    try {
-      await window.db.collection('app_data').doc(key).delete();
-      return { key, deleted: true };
-    } catch (e) {
-      console.error("Firebase Delete Error:", e);
-      return { key, deleted: false };
-    }
-  },
-  async list(prefix) {
-    try {
-      const snapshot = await window.db.collection('app_data').get();
-      const keys = [];
-      snapshot.forEach(doc => {
-        if (!prefix || doc.id.startsWith(prefix)) {
-          keys.push(doc.id);
-        }
-      });
-      return { keys };
-    } catch (e) {
-      console.error("Firebase List Error:", e);
-      return { keys: [] };
-    }
-  }
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+<script>
+const I={
+ dashboard:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+ car:'<svg viewBox="0 0 24 24"><path d="M5 17h14M6 17v2M18 17v2M3 12l2-5h14l2 5v5H3z"/><circle cx="7" cy="14" r="1"/><circle cx="17" cy="14" r="1"/></svg>',
+ users:'<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2M16 3.5a4 4 0 0 1 0 7.5M18 14a5 5 0 0 1 4 5v2"/></svg>',
+ box:'<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7 12 12l8.7-5M12 22V12"/></svg>',
+ chart:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg>',
+ settings:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6V3h4v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>',
+ search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
+ plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+ bell:'<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',
+ wrench:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18a2.1 2.1 0 0 0 3 3l5.3-5.3a5 5 0 0 0 6.4-6.4L15 12l-3-3z"/></svg>',
+ clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ money:'<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M7 9H6v1M17 15h1v-1"/></svg>',
+ globe:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+ lock:'<svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+ user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+ code:'<svg viewBox="0 0 24 24"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></svg>',
+ menu:'<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+ logout:'<svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>'
 };
-
-
-/* ---- Basit çizgi tabanlı ikon bileşenleri ---- */
-function Icon({ size = 20, style, className, children }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} className={className}>
-      {children}
-    </svg>
-  );
-}
-const Plus = (p) => <Icon {...p}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></Icon>;
-const X = (p) => <Icon {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Icon>;
-const Check = (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>;
-const ChevronLeft = (p) => <Icon {...p}><polyline points="15 18 9 12 15 6"/></Icon>;
-const Send = (p) => <Icon {...p}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></Icon>;
-const Phone = (p) => <Icon {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></Icon>;
-const Trash2 = (p) => <Icon {...p}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></Icon>;
-const Camera = (p) => <Icon {...p}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></Icon>;
-const Download = (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Icon>;
-const Wallet = (p) => <Icon {...p}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></Icon>;
-const CreditCard = (p) => <Icon {...p}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></Icon>;
-const FileText = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></Icon>;
-const FileDown = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></Icon>;
-const Printer = (p) => <Icon {...p}><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></Icon>;
-const Pencil = (p) => <Icon {...p}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></Icon>;
-const Bell = (p) => <Icon {...p}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></Icon>;
-const Users = (p) => <Icon {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
-const Cloud = (p) => <Icon {...p}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a4.5 4.5 0 1 1 0 9z"/></Icon>;
-const CloudUpload = (p) => <Icon {...p}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a4.5 4.5 0 1 1 0 9z"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></Icon>;
-const Search = (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
-const BarChart3 = (p) => <Icon {...p}><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></Icon>;
-const KeyRound = (p) => <Icon {...p}><path d="M2.5 21.5 8 16"/><circle cx="16" cy="8" r="5.5"/><path d="M13.5 10.5 16 8"/></Icon>;
-const FileUp = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></Icon>;
-const MapPin = (p) => <Icon {...p}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></Icon>;
-const ScanLine = (p) => <Icon {...p}><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></Icon>;
-const FileSignature = (p) => <Icon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h9"/><polyline points="14 2 14 8 20 8"/><path d="M8 17s1-1 2-1 1 1 2 1 1-1 2-1 1 1 2 1"/></Icon>;
-const Globe = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Icon>;
-const Coins = (p) => <Icon {...p}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>;
-const Bitcoin = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><path d="M9.5 8h3.5a2 2 0 1 1 0 4h-3.5zm0 4h4a2 2 0 1 1 0 4h-4z"/><line x1="10.5" y1="6" x2="10.5" y2="18"/></Icon>;
-const RefreshCw = (p) => <Icon {...p}><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></Icon>;
-const ArrowLeftRight = (p) => <Icon {...p}><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></Icon>;
-const Wrench = (p) => <Icon {...p}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></Icon>;
-const Package = (p) => <Icon {...p}><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73Z"/><path d="M12 22V12"/><path d="M3.3 7.3 12 12l8.7-4.7"/><path d="M7.5 4.27 16.5 9.27"/></Icon>;
-const Minus = (p) => <Icon {...p}><path d="M5 12h14"/></Icon>;
-const Calendar = (p) => <Icon {...p}><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></Icon>;
-const Sparkles = (p) => <Icon {...p}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></Icon>;
-
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-function formatTL(n) { return Number(n || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-
-function paidTotal(inv) {
-  if (Array.isArray(inv.payments) && inv.payments.length) return inv.payments.reduce((s, p) => s + p.amount, 0);
-  if (inv.status === 'paid') return inv.amount;
-  return 0;
-}
-function remainingAmount(inv) { return Math.max(0, inv.amount - paidTotal(inv)); }
-function invStatus(inv) {
-  const paid = paidTotal(inv);
-  if (paid >= inv.amount) return 'paid';
-  if (paid > 0) return 'partial';
-  return 'unpaid';
-}
-
-function daysSince(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  const now = new Date();
-  return Math.floor((now - d) / 86400000);
-}
-
-function personReliability(personInvoices) {
-  if (!personInvoices || personInvoices.length === 0) return null;
-  const rank = { onTime: 0, medium: 1, late: 2 };
-  let worst = 'onTime';
-  personInvoices.forEach(inv => {
-    const rem = remainingAmount(inv);
-    let days = daysSince(inv.date);
-    let cat = 'onTime';
-    if (days > 45) cat = 'late';
-    else if (days > 30) cat = 'medium';
-    if (rank[cat] > rank[worst]) worst = cat;
-  });
-  return worst;
-}
-
-const CURRENCIES = ['TRY', 'USD', 'EUR', 'GBP'];
-const EXPENSE_CATEGORIES = ['kira', 'maas', 'parca', 'fatura', 'yakit', 'diger'];
-
-function App() {
-  const [data, setData] = useState({ people: [], invoices: [], expenses: [] });
-  const [loading, setLoading] = useState(true);
-
-  // Real-time listener from Firebase Firestore
-  useEffect(() => {
-    const unsubscribe = window.db.collection('app_data').doc('main_store')
-      .onSnapshot((doc) => {
-        if (doc.exists) {
-          const fetchedData = doc.data().value;
-          if (fetchedData) {
-            setData(typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData);
-          }
-        }
-        setLoading(false);
-      }, (err) => {
-        console.error("Firestore sync error:", err);
-        setLoading(false);
-      });
-
-    return () => unsubscribe();
-  }, []);
-
-  const saveData = async (newData) => {
-    setData(newData);
-    await window.storage.set('main_store', JSON.stringify(newData));
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#14151A] text-white font-body">
-        <div className="text-center">
-          <RefreshCw className="animate-spin mb-2 mx-auto" size={32} />
-          <p>Firebase Verileri Yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-[#14151A] text-[#F5F5F0] font-body p-4">
-      <header className="mb-6 flex justify-between items-center border-b border-gray-800 pb-4">
-        <h1 className="text-xl font-bold font-display text-white">Hikmetoğlu Motor</h1>
-        <div className="flex items-center gap-2 text-xs text-green-400">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          Firebase Live Sync Aktif
-        </div>
-      </header>
-      
-      <main>
-        <div className="bg-[#1E2027] p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-lg font-semibold mb-4 text-white">Sistem Durumu</h2>
-          <p className="text-gray-400">Toplam Müşteri/Kişi: <span className="text-white font-bold">{data.people ? data.people.length : 0}</span></p>
-          <p className="text-gray-400">Toplam Fatura/İşlem: <span className="text-white font-bold">{data.invoices ? data.invoices.length : 0}</span></p>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+const icon=n=>`<span class="icon">${I[n]||I.wrench}</span>`;
+const translations={
+ tr:{loginTag:'AKILLI SERVİS YÖNETİMİ',welcome:'Atölyenize hoş geldiniz',loginSub:'Tüm servis operasyonunuzu tek ekrandan yönetin.',workshopCode:'Atölye kodu',username:'Kullanıcı adı',password:'Şifre',forgot:'Şifremi unuttum',login:'Giriş yap',newAccount:'Yeni atölye hesabı aç',free:'14 gün ücretsiz',customer:'Müşteri misiniz?',customerSub:'Size verilen servis kodunu girin.',track:'Göster',admin:'Platform yöneticisi girişi',hero:'Servisinizi hızlandırın, müşterinizi mutlu edin.',heroSub:'Araç kabulden teslime; iş emirleri, parça takibi ve müşteri bilgilendirmesi artık çok daha kolay.',live:'Canlı servis akışı',repair:'Onarımda',appointments:'Randevular',inventory:'Stok takibi',reports:'Raporlar',dashboard:'Genel Bakış',jobs:'İş Emirleri',customers:'Müşteriler',stock:'Stok & Parçalar',analytics:'Raporlama',settings:'Ayarlar',menu:'MENÜ',management:'YÖNETİM',goodMorning:'Günaydın, Mehmet 👋',today:'Bugün atölyenizde olan biten her şey burada.',newJob:'Yeni iş emri',activeJobs:'Aktif iş emri',waitingJobs:'Bekleyen araç',completed:'Bu ay tamamlanan',revenue:'Aylık ciro',recentJobs:'Güncel iş emirleri',viewAll:'Tümünü gör',vehicle:'Araç',customerCol:'Müşteri',operation:'İşlem',status:'Durum',delivery:'Teslim',activity:'Son hareketler',quick:'Hızlı işlemler',addCustomer:'Müşteri ekle',addVehicle:'Araç ekle',addStock:'Stok girişi',sendMessage:'Mesaj gönder',search:'Plaka, müşteri veya servis kodu ara...',filters:'Tüm durumlar',codeLabel:'Servis kodu',brandModel:'Marka / Model',plate:'Plaka',phone:'Telefon',desc:'Yapılacak işlem',estimated:'Tahmini tutar',save:'İş emri oluştur',cancel:'Vazgeç',allJobs:'İş Emirleri',allJobsSub:'Atölyedeki tüm araçları ve servis süreçlerini yönetin.',new:'Yeni',waiting:'Parça bekliyor',progress:'Onarımda',done:'Tamamlandı',success:'İş emri başarıyla oluşturuldu.',trackTitle:'Servis durumu',notFound:'Bu servis koduyla eşleşen kayıt bulunamadı.',logout:'Çıkış',demo:'Demo bilgilerle giriş yap',language:'Dil'},
+ en:{loginTag:'SMART WORKSHOP MANAGEMENT',welcome:'Welcome to your workshop',loginSub:'Manage your entire service operation from one screen.',workshopCode:'Workshop code',username:'Username',password:'Password',forgot:'Forgot password',login:'Sign in',newAccount:'Create a workshop account',free:'14 days free',customer:'Are you a customer?',customerSub:'Enter the service code provided to you.',track:'Track',admin:'Platform administrator login',hero:'Speed up your service, delight your customers.',heroSub:'From vehicle intake to delivery, work orders, parts and customer updates are now effortless.',live:'Live service flow',repair:'In repair',appointments:'Appointments',inventory:'Inventory',reports:'Reports',dashboard:'Overview',jobs:'Work Orders',customers:'Customers',stock:'Stock & Parts',analytics:'Reports',settings:'Settings',menu:'MENU',management:'MANAGEMENT',goodMorning:'Good morning, Mehmet 👋',today:'Everything happening in your workshop today is right here.',newJob:'New work order',activeJobs:'Active work orders',waitingJobs:'Waiting vehicles',completed:'Completed this month',revenue:'Monthly revenue',recentJobs:'Recent work orders',viewAll:'View all',vehicle:'Vehicle',customerCol:'Customer',operation:'Operation',status:'Status',delivery:'Delivery',activity:'Recent activity',quick:'Quick actions',addCustomer:'Add customer',addVehicle:'Add vehicle',addStock:'Stock entry',sendMessage:'Send message',search:'Search plate, customer or service code...',filters:'All statuses',codeLabel:'Service code',brandModel:'Make / Model',plate:'License plate',phone:'Phone',desc:'Work requested',estimated:'Estimated amount',save:'Create work order',cancel:'Cancel',allJobs:'Work Orders',allJobsSub:'Manage every vehicle and service process in your workshop.',new:'New',waiting:'Waiting for part',progress:'In repair',done:'Completed',success:'Work order created successfully.',trackTitle:'Service status',notFound:'No record matches this service code.',logout:'Sign out',demo:'Sign in with demo details',language:'Language'},
+ de:{loginTag:'INTELLIGENTE WERKSTATTVERWALTUNG',welcome:'Willkommen in Ihrer Werkstatt',loginSub:'Verwalten Sie Ihren gesamten Service auf einem Bildschirm.',workshopCode:'Werkstattcode',username:'Benutzername',password:'Passwort',forgot:'Passwort vergessen',login:'Anmelden',newAccount:'Werkstattkonto erstellen',free:'14 Tage kostenlos',customer:'Sind Sie Kunde?',customerSub:'Geben Sie Ihren Servicecode ein.',track:'Anzeigen',admin:'Plattform-Administrator',hero:'Schneller Service, zufriedene Kunden.',heroSub:'Von der Fahrzeugannahme bis zur Übergabe – Aufträge, Teile und Kundeninfos einfach verwalten.',live:'Live-Serviceablauf',repair:'In Reparatur',appointments:'Termine',inventory:'Lager',reports:'Berichte',dashboard:'Übersicht',jobs:'Aufträge',customers:'Kunden',stock:'Lager & Teile',analytics:'Berichte',settings:'Einstellungen',menu:'MENÜ',management:'VERWALTUNG',goodMorning:'Guten Morgen, Mehmet 👋',today:'Alles, was heute in Ihrer Werkstatt passiert.',newJob:'Neuer Auftrag',activeJobs:'Aktive Aufträge',waitingJobs:'Wartende Fahrzeuge',completed:'Diesen Monat fertig',revenue:'Monatsumsatz',recentJobs:'Aktuelle Aufträge',viewAll:'Alle anzeigen',vehicle:'Fahrzeug',customerCol:'Kunde',operation:'Vorgang',status:'Status',delivery:'Übergabe',activity:'Letzte Aktivitäten',quick:'Schnellzugriff',addCustomer:'Kunde hinzufügen',addVehicle:'Fahrzeug hinzufügen',addStock:'Wareneingang',sendMessage:'Nachricht senden',search:'Kennzeichen, Kunde oder Servicecode...',filters:'Alle Status',codeLabel:'Servicecode',brandModel:'Marke / Modell',plate:'Kennzeichen',phone:'Telefon',desc:'Auftragsbeschreibung',estimated:'Schätzbetrag',save:'Auftrag erstellen',cancel:'Abbrechen',allJobs:'Aufträge',allJobsSub:'Alle Fahrzeuge und Serviceprozesse verwalten.',new:'Neu',waiting:'Wartet auf Teil',progress:'In Reparatur',done:'Abgeschlossen',success:'Auftrag erfolgreich erstellt.',trackTitle:'Servicestatus',notFound:'Kein Eintrag zu diesem Servicecode gefunden.',logout:'Abmelden',demo:'Mit Demo-Daten anmelden',language:'Sprache'}
+};
+let lang=localStorage.getItem('sp-lang')||'tr';let t=translations[lang];let page='dashboard';let logged=localStorage.getItem('sp-login')==='1';
+const seed=[
+{id:1,code:'SRV-24091',plate:'34 EKA 742',model:'2021 Volkswagen Passat',customer:'Emre Kaya',phone:'0532 421 87 20',desc:'Periyodik bakım ve yağ değişimi',status:'progress',price:4850,delivery:'Bugün, 16:30',progress:65},
+{id:2,code:'SRV-24090',plate:'06 NVR 118',model:'2019 Renault Clio',customer:'Nevin Aras',phone:'0544 312 19 08',desc:'Ön fren balatası değişimi',status:'waiting',price:3200,delivery:'Yarın, 11:00',progress:35},
+{id:3,code:'SRV-24088',plate:'35 AGS 905',model:'2022 Ford Focus',customer:'Ayşe Güneş',phone:'0535 771 24 13',desc:'Klima kontrolü ve gaz dolumu',status:'done',price:2750,delivery:'Teslime hazır',progress:100},
+{id:4,code:'SRV-24087',plate:'34 KRL 466',model:'2018 BMW 320i',customer:'Kerem Oral',phone:'0507 663 40 10',desc:'Motor arıza tespiti',status:'new',price:1500,delivery:'12 Ekim',progress:10},
+{id:5,code:'SRV-24086',plate:'07 BCN 228',model:'2020 Fiat Egea',customer:'Burak Can',phone:'0538 214 31 17',desc:'Triger seti değişimi',status:'progress',price:8900,delivery:'13 Ekim',progress:55}
+];
+let jobs=JSON.parse(localStorage.getItem('sp-jobs')||'null')||seed;
+function setLang(l){lang=l;t=translations[l];localStorage.setItem('sp-lang',l);document.documentElement.lang=l;render();}
+function statusLabel(s){return t[s]||s}function money(n){return new Intl.NumberFormat(lang==='de'?'de-DE':'tr-TR').format(n)+' ₺'}
+function brand(){return `<span class="brand-mark">${icon('wrench')}</span><span>Servis<span style="color:var(--orange)">Pilot</span></span>`}
+function languagePicker(){return `<div class="language-picker"><button class="lang-btn" onclick="toggleLang(event)">${icon('globe')} ${lang.toUpperCase()} ▾</button><div id="lang-menu" class="lang-menu hidden"><button onclick="setLang('tr')">🇹🇷 Türkçe</button><button onclick="setLang('en')">🇬🇧 English</button><button onclick="setLang('de')">🇩🇪 Deutsch</button></div></div>`}
+function toggleLang(e){e.stopPropagation();document.getElementById('lang-menu').classList.toggle('hidden')}
+document.addEventListener('click',()=>{const m=document.getElementById('lang-menu');if(m)m.classList.add('hidden')});
+function renderAuth(){return `<section class="auth-shell"><div class="auth-form-side"><div class="brand">${brand()}</div>${languagePicker()}<div class="auth-card"><div class="eyebrow">${t.loginTag}</div><h1>${t.welcome}</h1><p class="sub">${t.loginSub}</p><form onsubmit="doLogin(event)"><div class="field"><label>${t.workshopCode}</label><div class="input-wrap">${icon('code')}<input id="workshop" value="DEMO01" autocomplete="organization" required></div></div><div class="field"><label>${t.username}</label><div class="input-wrap">${icon('user')}<input id="username" value="demo" autocomplete="username" required></div></div><div class="field"><div class="row-between"><label>${t.password}</label><button type="button" class="link-btn" onclick="toast('${t.demo}')">${t.forgot}</button></div><div class="input-wrap">${icon('lock')}<input type="password" value="demo123" autocomplete="current-password" required></div></div><button class="primary full">${t.login} →</button></form><div class="trial"><button onclick="showRegister()">${t.newAccount}</button> · ${t.free}</div><div class="divider"></div><div class="customer-box"><h3>${t.customer}</h3><p>${t.customerSub}</p><div class="track-row"><input id="track-code" placeholder="SRV-24091"><button class="outline-btn" onclick="track()">${t.track}</button></div></div><div class="admin-link">${t.admin}</div></div></div><div class="auth-visual"><div class="visual-inner"><div class="eyebrow">SERVİSPİLOT</div><h2>${t.hero}</h2><p>${t.heroSub}</p><div class="floating-card"><div style="font-size:12px;color:#97a4b7;margin:0 0 11px">${t.live}</div><div class="car-row"><div class="car-icon">${icon('car')}</div><div><div class="plate">34 EKA 742</div><div class="small-muted">Volkswagen Passat · ${t.repair}</div></div><span class="status progress">%65</span></div><div class="features"><div class="feature">${icon('clock')}<b>8 ${t.appointments}</b><span>Bugün</span></div><div class="feature">${icon('box')}<b>${t.inventory}</b><span>12 kritik parça</span></div><div class="feature">${icon('chart')}<b>${t.reports}</b><span>+18% verim</span></div></div></div></div></div></section>`}
+function doLogin(e){e.preventDefault();logged=true;localStorage.setItem('sp-login','1');render()}
+function logout(){logged=false;localStorage.removeItem('sp-login');render()}
+function navButton(id,ico,label,badge=''){return `<button class="${page===id?'active':''}" onclick="go('${id}')">${icon(ico)}<span>${label}</span>${badge?`<i class="badge">${badge}</i>`:''}</button>`}
+function shell(content,title){return `<div class="app-shell"><aside class="sidebar" id="sidebar"><div class="side-brand">${brand()}</div><div class="workshop"><b>Hızlı Oto Servis</b><span>DEMO01 · Pro paket</span></div><div class="nav-label">${t.menu}</div><nav class="nav">${navButton('dashboard','dashboard',t.dashboard)}${navButton('jobs','wrench',t.jobs,jobs.filter(x=>x.status!=='done').length)}${navButton('customers','users',t.customers)}${navButton('stock','box',t.stock)}</nav><div class="nav-label" style="margin-top:24px">${t.management}</div><nav class="nav">${navButton('analytics','chart',t.analytics)}${navButton('settings','settings',t.settings)}</nav><div class="side-bottom"><div class="user-mini"><div class="avatar">MY</div><div><b>Mehmet Yılmaz</b><span>Atölye yöneticisi</span></div><button class="logout" title="${t.logout}" onclick="logout()">${icon('logout')}</button></div></div></aside><main class="main"><header class="topbar"><button class="mobile-toggle icon-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">${icon('menu')}</button><div class="page-title">${title}</div><div class="top-search">${icon('search')}<input placeholder="${t.search}" onkeydown="if(event.key==='Enter'){page='jobs';render();setTimeout(()=>{let e=document.getElementById('job-search');e.value=this.value;filterJobs()},0)}"></div><div class="top-actions">${languagePicker()}<button class="icon-btn">${icon('bell')}<i class="dot"></i></button></div></header>${content}</main></div>`}
+function go(p){page=p;render();scrollTo(0,0)}
+function dashboard(){const active=jobs.filter(x=>x.status!=='done').length,waiting=jobs.filter(x=>x.status==='waiting').length,done=jobs.filter(x=>x.status==='done').length;return shell(`<div class="content"><div class="welcome"><div><h1>${t.goodMorning}</h1><p>${t.today}</p></div><button class="primary add-btn" onclick="newJob()">${icon('plus')}<span>${t.newJob}</span></button></div><div class="stats"><div class="stat-card"><div><div class="label">${t.activeJobs}</div><div class="value">${active}</div><div class="trend">↑ 3 dünden fazla</div></div><div class="stat-icon orange">${icon('wrench')}</div></div><div class="stat-card"><div><div class="label">${t.waitingJobs}</div><div class="value">${waiting}</div><div class="trend neutral">Parça / onay bekliyor</div></div><div class="stat-icon yellow">${icon('clock')}</div></div><div class="stat-card"><div><div class="label">${t.completed}</div><div class="value">${done+42}</div><div class="trend">↑ %12 geçen aya göre</div></div><div class="stat-icon green">${icon('car')}</div></div><div class="stat-card"><div><div class="label">${t.revenue}</div><div class="value">₺184K</div><div class="trend">↑ %8,4 geçen aya göre</div></div><div class="stat-icon blue">${icon('chart')}</div></div></div><div class="dashboard-grid"><div class="panel"><div class="panel-head"><h2>${t.recentJobs}</h2><button onclick="go('jobs')">${t.viewAll} →</button></div>${jobsTable(jobs.slice(0,5))}</div><div style="display:grid;gap:18px;align-content:start"><div class="panel"><div class="panel-head"><h2>${t.activity}</h2></div><div class="activity-list"><div class="activity"><div class="activity-icon">${icon('car')}</div><div><b>35 AGS 905 teslime hazır</b><p>Klima kontrolü tamamlandı.</p><time>12 dakika önce</time></div></div><div class="activity"><div class="activity-icon" style="color:var(--orange);background:#fff1eb">${icon('box')}</div><div><b>Parça siparişi geldi</b><p>06 NVR 118 · Fren balatası</p><time>38 dakika önce</time></div></div><div class="activity"><div class="activity-icon" style="color:var(--green);background:#eaf9f4">${icon('money')}</div><div><b>Ödeme alındı</b><p>Emre Kaya · 2.500 ₺</p><time>1 saat önce</time></div></div></div></div><div class="panel"><div class="panel-head"><h2>${t.quick}</h2></div><div class="quick"><button onclick="toast('${t.addCustomer}')">${icon('users')}${t.addCustomer}</button><button onclick="newJob()">${icon('car')}${t.addVehicle}</button><button onclick="toast('${t.addStock}')">${icon('box')}${t.addStock}</button><button onclick="toast('${t.sendMessage}')">${icon('bell')}${t.sendMessage}</button></div></div></div></div></div>`,t.dashboard)}
+function jobsTable(list){return `<div class="table-wrap"><table class="jobs-table"><thead><tr><th>${t.vehicle}</th><th>${t.customerCol}</th><th>${t.operation}</th><th>${t.status}</th><th>${t.delivery}</th></tr></thead><tbody>${list.map(j=>`<tr onclick="jobDetail(${j.id})"><td><div class="vehicle-cell"><div class="vehicle-dot">${icon('car')}</div><div><b>${j.plate}</b><span class="small-muted">${j.model}</span></div></div></td><td><b>${j.customer}</b><div class="small-muted">${j.phone}</div></td><td>${j.desc}<div class="progressbar"><i style="width:${j.progress}%"></i></div></td><td><span class="status ${j.status}">${statusLabel(j.status)}</span></td><td>${j.delivery}<div class="code">${j.code}</div></td></tr>`).join('')}</tbody></table></div>`}
+function jobsPage(){return shell(`<div class="content"><div class="welcome"><div><h1>${t.allJobs}</h1><p>${t.allJobsSub}</p></div><button class="primary add-btn" onclick="newJob()">${icon('plus')}<span>${t.newJob}</span></button></div><div class="toolbar"><div class="searchbox">${icon('search')}<input id="job-search" placeholder="${t.search}" oninput="filterJobs()"></div><select id="status-filter" onchange="filterJobs()"><option value="">${t.filters}</option><option value="new">${t.new}</option><option value="progress">${t.progress}</option><option value="waiting">${t.waiting}</option><option value="done">${t.done}</option></select></div><div id="record-grid" class="record-grid">${jobCards(jobs)}</div></div>`,t.jobs)}
+function jobCards(list){if(!list.length)return `<div class="empty" style="grid-column:1/-1">${icon('search')}<p>${t.notFound}</p></div>`;return list.map(j=>`<article class="record-card" onclick="jobDetail(${j.id})"><div class="record-top"><div><div class="record-plate">${j.plate}</div><div class="small-muted">${j.model}</div></div><span class="status ${j.status}">${statusLabel(j.status)}</span></div><h3>${j.desc}</h3><div class="small-muted">${j.customer} · ${j.phone}</div><div class="progressbar"><i style="width:${j.progress}%"></i></div><div class="record-meta"><span class="code">${j.code}</span><span>${money(j.price)}</span><span style="margin-left:auto">${j.delivery}</span></div></article>`).join('')}
+function filterJobs(){let q=document.getElementById('job-search').value.toLowerCase(),s=document.getElementById('status-filter').value;let out=jobs.filter(j=>(!s||j.status===s)&&Object.values(j).join(' ').toLowerCase().includes(q));document.getElementById('record-grid').innerHTML=jobCards(out)}
+function placeholderPage(id){let names={customers:t.customers,stock:t.stock,analytics:t.analytics,settings:t.settings};return shell(`<div class="content"><div class="welcome"><div><h1>${names[id]}</h1><p>${t.allJobsSub}</p></div></div><div class="panel empty">${icon(id==='customers'?'users':id==='stock'?'box':id==='analytics'?'chart':'settings')}<h2>${names[id]}</h2><p>Bu bölüm demo arayüzünde kullanıma hazırdır.</p><button class="primary" onclick="toast('${names[id]}')">${t.viewAll}</button></div></div>`,names[id])}
+function newJob(){modal(`<div class="modal-head"><h2>${t.newJob}</h2><button class="modal-close" onclick="closeModal()">×</button></div><form onsubmit="saveJob(event)"><div class="modal-body"><div class="form-grid"><div class="field"><label>${t.plate}</label><input name="plate" placeholder="34 ABC 123" required></div><div class="field"><label>${t.brandModel}</label><input name="model" placeholder="2022 Toyota Corolla" required></div><div class="field"><label>${t.customerCol}</label><input name="customer" required></div><div class="field"><label>${t.phone}</label><input name="phone" placeholder="05__ ___ __ __"></div><div class="field span-2"><label>${t.desc}</label><textarea name="desc" rows="3" required></textarea></div><div class="field"><label>${t.status}</label><select name="status"><option value="new">${t.new}</option><option value="progress">${t.progress}</option><option value="waiting">${t.waiting}</option></select></div><div class="field"><label>${t.estimated}</label><input name="price" type="number" min="0" value="0"></div></div></div><div class="modal-actions"><button type="button" class="secondary" onclick="closeModal()">${t.cancel}</button><button class="primary">${t.save}</button></div></form>`)}
+function saveJob(e){e.preventDefault();let f=new FormData(e.target),status=f.get('status');jobs.unshift({id:Date.now(),code:'SRV-'+String(Date.now()).slice(-5),plate:f.get('plate').toUpperCase(),model:f.get('model'),customer:f.get('customer'),phone:f.get('phone'),desc:f.get('desc'),status,price:+f.get('price'),delivery:'Planlanacak',progress:status==='progress'?45:10});localStorage.setItem('sp-jobs',JSON.stringify(jobs));closeModal();toast(t.success);page='jobs';render()}
+function jobDetail(id){let j=jobs.find(x=>x.id===id);modal(`<div class="modal-head"><h2>${j.plate}</h2><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body"><div class="track-result"><div class="track-hero"><div class="row-between"><div><small>${t.codeLabel}</small><div style="font:800 19px Manrope;margin-top:4px">${j.code}</div></div><span class="status ${j.status}">${statusLabel(j.status)}</span></div></div><h3 style="font:800 17px Manrope;margin-bottom:4px">${j.model}</h3><p class="sub" style="margin-bottom:18px">${j.customer} · ${j.phone}</p><div class="field"><label>${t.operation}</label><div>${j.desc}</div></div><div class="row-between" style="padding:14px 0;border-top:1px solid var(--line)"><span>${t.estimated}</span><b>${money(j.price)}</b></div><div class="field"><label>${t.status}</label><select onchange="changeStatus(${j.id},this.value)"><option value="new" ${j.status==='new'?'selected':''}>${t.new}</option><option value="progress" ${j.status==='progress'?'selected':''}>${t.progress}</option><option value="waiting" ${j.status==='waiting'?'selected':''}>${t.waiting}</option><option value="done" ${j.status==='done'?'selected':''}>${t.done}</option></select></div></div></div><div class="modal-actions"><button class="secondary" onclick="closeModal()">${t.cancel}</button><button class="primary" onclick="toast('${t.sendMessage}')">${t.sendMessage}</button></div>`)}
+function changeStatus(id,s){let j=jobs.find(x=>x.id===id);j.status=s;j.progress={new:10,progress:60,waiting:35,done:100}[s];localStorage.setItem('sp-jobs',JSON.stringify(jobs));toast(statusLabel(s));closeModal();render()}
+function track(){let code=(document.getElementById('track-code').value||'').trim().toUpperCase(),j=jobs.find(x=>x.code===code);if(!j){toast(t.notFound);return}modal(`<div class="modal-head"><h2>${t.trackTitle}</h2><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body"><div class="track-result"><div class="track-hero"><small>${j.code}</small><div class="row-between" style="margin-top:6px"><div style="font:800 21px Manrope">${j.plate}</div><span class="status ${j.status}">${statusLabel(j.status)}</span></div><div style="margin-top:5px;color:#aeb9ca;font-size:12px">${j.model}</div></div><div class="timeline"><div class="timeline-item active"><b>Araç kabul edildi</b><p>Servis kaydı oluşturuldu.</p></div><div class="timeline-item ${j.status!=='new'?'active':''}"><b>Kontrol ve onarım</b><p>${j.desc}</p></div><div class="timeline-item ${j.status==='done'?'active':''}"><b>${t.done}</b><p>${j.status==='done'?j.delivery:'İşlem devam ediyor.'}</p></div></div></div></div>`)}
+function showRegister(){modal(`<div class="modal-head"><h2>${t.newAccount}</h2><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body"><p class="sub">${t.heroSub}</p><div class="form-grid"><div class="field span-2"><label>Atölye adı</label><input placeholder="Örn. Hızlı Oto Servis"></div><div class="field"><label>${t.username}</label><input></div><div class="field"><label>E-posta</label><input type="email"></div></div></div><div class="modal-actions"><button class="secondary" onclick="closeModal()">${t.cancel}</button><button class="primary" onclick="closeModal();toast('${t.free}')">${t.newAccount}</button></div>`)}
+function modal(html){document.getElementById('modal-root').innerHTML=`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`}function closeModal(){document.getElementById('modal-root').innerHTML=''}
+let toastTimer;function toast(msg){clearTimeout(toastTimer);document.getElementById('toast-root').innerHTML=`<div class="toast">✓ &nbsp;${msg}</div>`;toastTimer=setTimeout(()=>document.getElementById('toast-root').innerHTML='',2600)}
+function render(){t=translations[lang];document.documentElement.lang=lang;let html;if(!logged)html=renderAuth();else if(page==='dashboard')html=dashboard();else if(page==='jobs')html=jobsPage();else html=placeholderPage(page);document.getElementById('root').innerHTML=html}
+render();
 </script>
 </body>
 </html>
